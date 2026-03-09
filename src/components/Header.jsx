@@ -180,7 +180,7 @@ export default function Header({ onNavigate, onEmergency, language, onLanguageCh
           </div>
 
           {/* Login Button */}
-          <button className="btn-login" onClick={() => alert('Login coming soon!')}>
+          <button className="btn-login" onClick={() => onNavigate('login')}>
             {t.header.login}
           </button>
 
@@ -220,7 +220,7 @@ export default function Header({ onNavigate, onEmergency, language, onLanguageCh
           ))}
 
           <div className="mobile-actions">
-            <button className="btn-login" onClick={() => { alert('Login coming soon!'); setMenuOpen(false); }}>
+            <button className="btn-login" onClick={() => { onNavigate('login'); setMenuOpen(false); }}>
               {t.header.login}
             </button>
             <button className="btn-volunteer" onClick={() => { onVolunteer(); setMenuOpen(false); }}>

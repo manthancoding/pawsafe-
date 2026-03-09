@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from '../utils/LanguageContext';
+import { statsApi } from '../utils/api';
 import './RescueCounter.css';
 
 // Animate a number from 0 to target
@@ -56,11 +57,20 @@ export default function RescueCounter() {
     const t = useTranslation();
     const s = t.stats;
 
+    // Fallback values shown while loading or if backend unavailable
+    const [stats, setStats] = useState({ rescued: 1482, active: 37, ngos: 218, volunteers: 3940 });
+
+    useEffect(() => {
+        statsApi.get()
+            .then((data) => setStats(data))
+            .catch(() => { /* keep fallback values */ });
+    }, []);
+
     const cards = [
-        { icon: '🐶', label: s.rescued, target: 1482, suffix: '+', color: '#0d7377' },
-        { icon: '🚑', label: s.active, target: 37, suffix: '', color: '#e53935' },
-        { icon: '🏥', label: s.ngos, target: 218, suffix: '+', color: '#7b1fa2' },
-        { icon: '👥', label: s.volunteers, target: 3940, suffix: '+', color: '#f57c00' },
+        { icon: '🐶', label: s.rescued, target: stats.rescued, suffix: '+', color: '#0d7377' },
+        { icon: '🚑', label: s.active, target: stats.active, suffix: '', color: '#e53935' },
+        { icon: '🏥', label: s.ngos, target: stats.ngos, suffix: '+', color: '#7b1fa2' },
+        { icon: '👥', label: s.volunteers, target: stats.volunteers, suffix: '+', color: '#f57c00' },
     ];
 
     return (

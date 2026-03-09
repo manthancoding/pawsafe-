@@ -16,6 +16,7 @@ import AnimalBiteGuide from './components/AnimalBiteGuide';
 import ReadyToHelp from './components/ReadyToHelp';
 import VolunteerDashboard from './components/VolunteerDashboard';
 import Footer from './components/Footer';
+import LoginPage from './components/LoginPage';
 import { useTranslation } from './utils/LanguageContext';
 
 function App() {
@@ -37,7 +38,12 @@ function App() {
           onVolunteer={() => setShowVolunteerDash(true)}
         />
 
-        {!showEmergencyForm ? (
+        {currentPage === 'login' ? (
+          <LoginPage
+            onClose={() => setCurrentPage('home')}
+            onLoginSuccess={() => setCurrentPage('home')}
+          />
+        ) : !showEmergencyForm ? (
           <>
             {currentPage === 'home' && <Hero onEmergency={handleEmergency} />}
             {currentPage === 'home' && <RescueCounter />}
@@ -67,7 +73,7 @@ function App() {
           </>
         )}
 
-        {!showEmergencyForm && (
+        {currentPage !== 'login' && !showEmergencyForm && (
           <EmergencyFAB onEmergency={handleEmergency} />
         )}
 

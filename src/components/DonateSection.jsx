@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from '../utils/LanguageContext';
+import { donationsApi } from '../utils/api';
 import './DonateSection.css';
 
 const CAUSES = [
@@ -50,12 +51,32 @@ export default function DonateSection() {
     const finalAmount = preset ?? (parseInt(amount) || 0);
     const isValid = finalAmount >= 1;
 
-    const handleOneTimeDonate = () => {
+    const handleOneTimeDonate = async () => {
         if (!isValid) return;
+        try {
+            await donationsApi.submit({
+                cause,
+                amount: finalAmount,
+                type: 'onetime',
+            });
+        } catch (err) {
+            console.warn('Donation record failed (backend may be offline):', err.message);
+        }
         setShowTY(true);
     };
 
-    const handleSubscribe = () => {
+    const handleSubscribe = async () => {
+        try {
+            const p = MONTHLY_PLANS.find(mp => mp.id === plan);
+            await donationsApi.submit({
+                cause,
+                amount: p?.amount || 0,
+                type: 'monthly',
+                plan,
+            });
+        } catch (err) {
+            console.warn('Subscription record failed (backend may be offline):', err.message);
+        }
         setShowTY(true);
     };
 

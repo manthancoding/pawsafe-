@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { emergencyApi } from '../utils/api';
 import RecoveryTracker from './RecoveryTracker';
 import './VolunteerDashboard.css';
 
@@ -14,46 +15,13 @@ const MOCK_VOLUNTEER = {
 
 const INITIAL_CASES = [
     {
-        id: 1,
-        animal: '🐶',
-        type: 'Dog',
-        status: 'active',
-        title: 'Injured stray dog – Highway NH48',
-        location: 'Andheri West, Mumbai',
-        distance: '1.3 km',
-        time: '2 min ago',
-        urgency: 'critical',
-        reporter: 'Priya Sharma',
-        description: 'Large dog hit by vehicle. Bleeding from hind leg. Conscious but unable to move.',
-        coords: { lat: 19.119, lng: 72.847 },
-    },
-    {
-        id: 2,
-        animal: '🐱',
-        type: 'Cat',
-        status: 'active',
-        title: 'Kitten trapped in drain',
-        location: 'Borivali East, Mumbai',
-        distance: '3.1 km',
-        time: '8 min ago',
-        urgency: 'urgent',
-        reporter: 'Rahul Nair',
-        description: 'Small kitten stuck in open drain. Meowing loudly. Needs immediate retrieval.',
-        coords: { lat: 19.233, lng: 72.856 },
-    },
-    {
-        id: 3,
-        animal: '🦅',
-        type: 'Bird',
-        status: 'pending',
-        title: 'Eagle with broken wing',
-        location: 'Powai, Mumbai',
-        distance: '5.4 km',
-        time: '15 min ago',
-        urgency: 'moderate',
-        reporter: 'Sonia Kapoor',
-        description: 'Large bird on ground, cannot fly. Wing appears fractured. Safe area.',
-        coords: { lat: 19.118, lng: 72.906 },
+        id: '__placeholder__',
+        animal: '🐶', type: 'Dog', status: 'active',
+        title: 'Loading emergencies…',
+        location: 'Please wait', distance: '', time: '',
+        urgency: 'moderate', reporter: '',
+        description: 'Fetching live cases from server.',
+        coords: { lat: 0, lng: 0 },
     },
 ];
 
@@ -189,10 +157,40 @@ function MainPanel({ activeCase, cases, onAccept, onDecline, onClearSelected }) 
 // ── Main Dashboard ─────────────────────────────────────────
 export default function VolunteerDashboard({ onClose }) {
     const [activeTab, setActiveTab] = useState('alerts');
-    const [cases, setCases] = useState(INITIAL_CASES);
+    const [cases, setCases] = useState([]);
     const [selectedCase, setSelectedCase] = useState(null);
     const [accepted, setAccepted] = useState([]);
     const [toast, setToast] = useState(null);
+
+    // Load live emergencies from backend
+    useEffect(() => {
+        emergencyApi.getAll()
+            .then((data) => {
+                // Map DB docs to the shape the UI expects
+                const mapped = data.map((e) => ({
+                    id: e._id,
+                    animal: { dog: '🐶', cat: '🐱', bird: '🦅', rabbit: '🐰', other: '🦁' }[e.animalType] || '🐾',
+                    type: e.animalType.charAt(0).toUpperCase() + e.animalType.slice(1),
+                    status: e.status,
+                    title: `${e.issueType.charAt(0).toUpperCase() + e.issueType.slice(1)} ${e.animalType} – ${e.location || 'Unknown location'}`,
+                    location: e.location || 'Location not provided',
+                    distance: '',
+                    time: new Date(e.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
+                    urgency: e.urgency,
+                    reporter: e.name,
+                    description: e.details,
+                    coords: { lat: e.latitude || 0, lng: e.longitude || 0 },
+                }));
+                setCases(mapped);
+            })
+            .catch(() => {
+                // Fallback to hardcoded data if backend unavailable
+                setCases([
+                    { id: 1, animal: '🐶', type: 'Dog', status: 'active', title: 'Injured stray dog – Highway NH48', location: 'Andheri West, Mumbai', distance: '1.3 km', time: '2 min ago', urgency: 'critical', reporter: 'Priya Sharma', description: 'Large dog hit by vehicle. Bleeding from hind leg.', coords: { lat: 19.119, lng: 72.847 } },
+                    { id: 2, animal: '🐱', type: 'Cat', status: 'active', title: 'Kitten trapped in drain', location: 'Borivali East, Mumbai', distance: '3.1 km', time: '8 min ago', urgency: 'urgent', reporter: 'Rahul Nair', description: 'Small kitten stuck in open drain.', coords: { lat: 19.233, lng: 72.856 } },
+                ]);
+            });
+    }, []);
 
     const showToast = (msg, type = 'success') => {
         setToast({ msg, type });
@@ -204,12 +202,16 @@ export default function VolunteerDashboard({ onClose }) {
         setCases(prev => prev.map(x => x.id === c.id ? { ...x, status: 'accepted' } : x));
         setSelectedCase(null);
         showToast(`✅ Rescue accepted for ${c.type} at ${c.location}`);
+        // Persist status to backend
+        emergencyApi.updateStatus(c.id, 'accepted').catch(console.error);
     };
 
     const handleDecline = (id) => {
         setCases(prev => prev.map(x => x.id === id ? { ...x, status: 'declined' } : x));
         setSelectedCase(null);
         showToast('❌ Case declined', 'error');
+        // Persist status to backend
+        emergencyApi.updateStatus(id, 'declined').catch(console.error);
     };
 
     const navItems = [

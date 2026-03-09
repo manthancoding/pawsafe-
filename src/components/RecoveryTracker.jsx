@@ -1,85 +1,50 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { animalsApi } from '../utils/api';
 import './RecoveryTracker.css';
 
-// ── Mock rescued animal data ────────────────────────────────
-const RESCUED_ANIMALS = [
+// Status → UI config map
+const STATUS_META = {
+    critical: { label: 'Critical', color: '#e53935', stage: 1 },
+    stable: { label: 'Stable', color: '#1565c0', stage: 2 },
+    recovering: { label: 'Recovering', color: '#f57c00', stage: 3 },
+    released: { label: 'Released', color: '#2e7d32', stage: 4 },
+    adopted: { label: 'Adopted', color: '#2e7d32', stage: 4 },
+};
+
+// Static fallback animals used when backend is offline
+const FALLBACK_ANIMALS = [
     {
-        id: 1,
-        name: 'Bruno',
-        emoji: '🐶',
-        species: 'Indian Pariah Dog',
-        age: '~3 years',
-        gender: 'Male',
-        rescueDate: '01 Mar 2026',
-        rescueLocation: 'Andheri West, Mumbai',
-        injury: 'Hit by vehicle — fracture in right hind leg, road rash on flank',
-        rescuedBy: 'Arjun Mehta',
-        ngo: 'Mumbai Animal Aid',
-        vet: 'Dr. Priya Desai',
-        vetPhone: '+91 98200 11234',
-        status: 'Treatment Ongoing',
-        statusColor: '#f57c00',
-        stage: 2, // 0-4 (Rescued → Examined → Treatment → Recovery → Released)
-        vitals: [
-            { label: 'Weight', value: '14.2 kg', icon: '⚖️', trend: 'stable' },
-            { label: 'Appetite', value: 'Moderate', icon: '🍖', trend: 'improving' },
-            { label: 'Mobility', value: 'Limited', icon: '🦴', trend: 'improving' },
-            { label: 'Pain Level', value: '3 / 10', icon: '💊', trend: 'improving' },
+        _id: '1', name: 'Bruno', emoji: '🐶', species: 'Dog',
+        status: 'recovering', rescuedBy: 'Arjun Mehta',
+        rescueDate: '01 Mar 2026', vet: 'Dr. Sunita Rao',
+        location: 'Andheri West, Mumbai',
+        description: 'Street dog rescued after being hit by a car.',
+        notes: [
+            { date: '01 Mar 2026', author: 'Dr. Sunita Rao', content: 'X-ray shows clean fracture on right hind leg. Cast applied.' },
+            { date: '04 Mar 2026', author: 'Dr. Sunita Rao', content: 'Eating well. No infection signs.' },
         ],
-        timeline: [
-            { date: '01 Mar 2026', time: '8:30 PM', title: 'Rescued from highway', note: 'Animal found on NH-48. Immobilised and transported to care centre.', done: true },
-            { date: '01 Mar 2026', time: '9:15 PM', title: 'Initial vet examination', note: 'X-ray confirmed hairline fracture, right hind leg. Rabies & distemper check done.', done: true },
-            { date: '02 Mar 2026', time: '10:00 AM', title: 'Surgery — fracture fixation', note: 'External fixator applied under general anaesthesia. Surgery successful. Now under observation.', done: true },
-            { date: '03 Mar 2026', time: '9:00 AM', title: 'Post-op check & dressing', note: 'Wound healing well. Antibiotics and pain medication prescribed.', done: false, current: true },
-            { date: '10 Mar 2026', time: '', title: 'Follow-up X-ray', note: 'Scheduled to check bone healing progress.', done: false },
-            { date: '25 Mar 2026', time: '', title: 'Fixator removal (if healed)', note: 'Target discharge and adoption placement.', done: false },
+        milestones: [
+            { date: '01 Mar', label: 'Rescued & Admitted', completed: true },
+            { date: '02 Mar', label: 'Surgery / Treatment', completed: true },
+            { date: '05 Mar', label: 'Stable Condition', completed: true },
+            { date: '15 Mar', label: 'Cast Removal', completed: false },
+            { date: '22 Mar', label: 'Ready for Adoption', completed: false },
         ],
-        medications: [
-            { name: 'Meloxicam 7.5mg', type: 'Pain relief', frequency: 'Once daily after food' },
-            { name: 'Amoxicillin 500mg', type: 'Antibiotic', frequency: 'Twice daily for 7 days' },
-            { name: 'Rabies vaccine', type: 'Vaccination', frequency: 'Completed on Day 0' },
-        ],
-        photos: ['🐕', '🩺', '💉'],
-        nextAppointment: '03 Mar 2026, 9:00 AM',
-        adoptionReady: false,
     },
     {
-        id: 2,
-        name: 'Mitthu',
-        emoji: '🐱',
-        species: 'Domestic Shorthair Cat',
-        age: '~6 months',
-        gender: 'Female',
-        rescueDate: '28 Feb 2026',
-        rescueLocation: 'Borivali East, Mumbai',
-        injury: 'Trapped in drain — dehydrated, minor cuts on paws',
-        rescuedBy: 'Arjun Mehta',
-        ngo: 'Paws Mumbai',
-        vet: 'Dr. Sameer Kulkarni',
-        vetPhone: '+91 98190 44321',
-        status: 'In Recovery',
-        statusColor: '#2e7d32',
-        stage: 3,
-        vitals: [
-            { label: 'Weight', value: '1.8 kg', icon: '⚖️', trend: 'improving' },
-            { label: 'Appetite', value: 'Good', icon: '🍖', trend: 'stable' },
-            { label: 'Mobility', value: 'Normal', icon: '🦴', trend: 'stable' },
-            { label: 'Pain Level', value: '1 / 10', icon: '💊', trend: 'stable' },
+        _id: '2', name: 'Luna', emoji: '🐱', species: 'Cat',
+        status: 'stable', rescuedBy: 'Priya Sharma',
+        rescueDate: '28 Feb 2026', vet: 'Dr. Anil Kumar',
+        location: 'Borivali, Mumbai',
+        description: 'Kitten rescued from a drain. Malnourished on arrival.',
+        notes: [
+            { date: '28 Feb 2026', author: 'Dr. Anil Kumar', content: 'Severely dehydrated. IV fluids started.' },
         ],
-        timeline: [
-            { date: '28 Feb 2026', time: '6:00 PM', title: 'Rescued from open drain', note: 'Kitten found in storm drain, dehydrated and scared. Transported safely.', done: true },
-            { date: '28 Feb 2026', time: '7:30 PM', title: 'Emergency vet care', note: 'IV fluids administered. Paw wounds cleaned and dressed.', done: true },
-            { date: '01 Mar 2026', time: '9:00 AM', title: 'Observation & feeding', note: 'Eating well. Wounds healing. Vaccines administered.', done: true },
-            { date: '02 Mar 2026', time: '', title: 'Recovery check', note: 'Fully active and playful. Cleared for foster home.', done: true },
-            { date: '07 Mar 2026', time: '', title: 'Final health clearance', note: 'Spay surgery scheduled before adoption.', done: false, current: true },
+        milestones: [
+            { date: '28 Feb', label: 'Rescued & Admitted', completed: true },
+            { date: '01 Mar', label: 'IV Fluids & Nutrition', completed: true },
+            { date: '05 Mar', label: 'Eating Independently', completed: false },
         ],
-        medications: [
-            { name: 'Oral Rehydration Salts', type: 'Hydration', frequency: 'As needed' },
-            { name: 'Neocort Cream', type: 'Wound care', frequency: 'Apply twice daily' },
-        ],
-        photos: ['🐱', '💊', '🏥'],
-        nextAppointment: '07 Mar 2026',
-        adoptionReady: true,
     },
 ];
 
@@ -248,27 +213,82 @@ function RecoveryDetail({ animal }) {
 }
 
 export default function RecoveryTracker() {
-    const [selectedId, setSelectedId] = useState(RESCUED_ANIMALS[0].id);
-    const selected = RESCUED_ANIMALS.find(a => a.id === selectedId);
+    const [animals, setAnimals] = useState(FALLBACK_ANIMALS);
+    const [selectedId, setSelectedId] = useState(null);
+
+    useEffect(() => {
+        animalsApi.getAll()
+            .then((data) => {
+                if (data && data.length > 0) {
+                    setAnimals(data);
+                    setSelectedId(data[0]._id);
+                } else {
+                    setSelectedId(FALLBACK_ANIMALS[0]._id);
+                }
+            })
+            .catch(() => {
+                setSelectedId(FALLBACK_ANIMALS[0]._id);
+            });
+    }, []);
+
+    const selected = animals.find(a => a._id === selectedId) || animals[0];
+
+    // Convert DB animal doc to the shape RecoveryDetail expects
+    function toUiAnimal(a) {
+        const meta = STATUS_META[a.status] || STATUS_META.stable;
+        return {
+            ...a,
+            id: a._id,
+            status: meta.label,
+            statusColor: meta.color,
+            stage: meta.stage,
+            rescueLocation: a.location || '',
+            injury: a.description || '',
+            ngo: '',
+            vetPhone: '',
+            age: '',
+            gender: '',
+            adoptionReady: a.status === 'released' || a.status === 'adopted',
+            // Map DB notes to UI timeline format
+            timeline: (a.milestones || []).map((m, i) => ({
+                date: m.date,
+                time: '',
+                title: m.label,
+                note: (a.notes[i] || {}).content || '',
+                done: m.completed,
+                current: !m.completed && (a.milestones[i - 1] || {}).completed,
+            })),
+            // Placeholder vitals (actual vet vitals not stored in DB yet)
+            vitals: [
+                { label: 'Status', value: meta.label, icon: '📊', trend: a.status === 'recovering' ? 'improving' : 'stable' },
+                { label: 'Vet', value: a.vet || 'Assigned', icon: '👨‍⚕️', trend: 'stable' },
+                { label: 'Rescue By', value: a.rescuedBy || '—', icon: '🦸', trend: 'stable' },
+                { label: 'Date', value: a.rescueDate || '—', icon: '📅', trend: 'stable' },
+            ],
+            medications: [],
+        };
+    }
+
+    const uiAnimal = selected ? toUiAnimal(selected) : null;
 
     return (
         <div className="recovery-tracker">
             {/* Left: animal list */}
             <div className="ra-list">
                 <p className="ra-list-heading">My Rescued Animals</p>
-                {RESCUED_ANIMALS.map(a => (
+                {animals.map(a => (
                     <AnimalCard
-                        key={a.id}
-                        animal={a}
-                        isSelected={selectedId === a.id}
-                        onClick={() => setSelectedId(a.id)}
+                        key={a._id}
+                        animal={toUiAnimal(a)}
+                        isSelected={selectedId === a._id}
+                        onClick={() => setSelectedId(a._id)}
                     />
                 ))}
             </div>
 
             {/* Right: detail panel */}
             <div className="ra-detail-wrap">
-                {selected ? <RecoveryDetail animal={selected} /> : (
+                {uiAnimal ? <RecoveryDetail animal={uiAnimal} /> : (
                     <div className="rd-empty">
                         <span>🐾</span>
                         <p>Select an animal to view recovery details</p>
