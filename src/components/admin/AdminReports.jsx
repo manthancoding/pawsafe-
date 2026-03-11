@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { emergencyApi } from '../../utils/api';
 
 export default function AdminReports() {
     const [reports, setReports] = useState([]);
@@ -6,14 +7,10 @@ export default function AdminReports() {
 
     const fetchReports = async () => {
         try {
-            const token = localStorage.getItem('pawsafe_token');
-            const res = await fetch('http://localhost:5000/api/emergencies', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const data = await res.json();
-            if (data.success) {
-                setReports(data.data);
-            }
+            const data = await emergencyApi.getAll();
+            // Optional: sort newest first
+            data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            setReports(data);
         } catch (err) {
             console.error('Failed to fetch reports', err);
         } finally {
@@ -27,19 +24,8 @@ export default function AdminReports() {
 
     const handleStatusUpdate = async (id, status) => {
         try {
-            const token = localStorage.getItem('pawsafe_token');
-            const res = await fetch(`http://localhost:5000/api/emergencies/${id}/status`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ status })
-            });
-            const result = await res.json();
-            if (result.success) {
-                fetchReports();
-            }
+            await emergencyApi.updateStatus(id, status);
+            fetchReports();
         } catch (err) {
             alert('Failed to update report status');
         }

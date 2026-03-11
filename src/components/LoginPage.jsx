@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
-import './LoginPage.css';
-
-const API_BASE = 'http://localhost:5000/api';
-
-export default function LoginPage({ onClose, onLoginSuccess, user: initialUser }) {
+import { auth, db } from '../firebase';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut as firebaseSignOut } from 'firebase/auth';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
+import './LoginPage.css'; export default function LoginPage({ onClose, onLoginSuccess, user: initialUser }) {
     const [tab, setTab] = useState('login');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -47,42 +46,71 @@ export default function LoginPage({ onClose, onLoginSuccess, user: initialUser }
         setLoading(true);
 
         try {
-            const endpoint = tab === 'login' ? '/auth/login' : '/auth/register';
-            const body = tab === 'login'
-                ? { email: form.email, password: form.password }
-                : { name: form.name, email: form.email, phone: form.phone, city: form.city, password: form.password };
+            if (tab === 'login') {
+                const userCredential = await signInWithEmailAndPassword(auth, form.email, form.password);
+                const user = userCredential.user;
+                // Fetch additional user details from Firestore
+                const userDocRef = doc(db, 'users', user.uid);
+                const userDoc = await getDoc(userDocRef);
+                const userData = userDoc.exists() ? userDoc.data() : { email: user.email, name: user.email, role: 'user' };
 
-            const res = await fetch(`${API_BASE}${endpoint}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body),
-            });
-            const data = await res.json();
+                const userPayload = { uid: user.uid, ...userData };
+                localStorage.setItem('pawsafe_token', await user.getIdToken());
+                localStorage.setItem('pawsafe_user', JSON.stringify(userPayload));
+                setCurrentUser(userPayload);
 
-            if (!res.ok) {
-                setError(data.message || 'Something went wrong');
-                return;
-            }
+                if (onLoginSuccess) {
+                    onLoginSuccess(userPayload);
+                }
+            } else {
+                const userCredential = await createUserWithEmailAndPassword(auth, form.email, form.password);
+                const user = userCredential.user;
 
-            localStorage.setItem('pawsafe_token', data.token);
-            localStorage.setItem('pawsafe_user', JSON.stringify(data.user));
-            setCurrentUser(data.user);
+                const newUserData = {
+                    name: form.name,
+                    email: form.email,
+                    phone: form.phone,
+                    city: form.city,
+                    role: 'user', // default role
+                    createdAt: new Date().toISOString()
+                };
 
-            if (tab === 'signup') {
+                // Save additional details to Firestore
+                await setDoc(doc(db, 'users', user.uid), newUserData);
+
+                const userPayload = { uid: user.uid, ...newUserData };
+                localStorage.setItem('pawsafe_token', await user.getIdToken());
+                localStorage.setItem('pawsafe_user', JSON.stringify(userPayload));
+                setCurrentUser(userPayload);
+
                 setSuccess('Account created! Welcome to PawSafe 🐾');
-            }
 
-            if (onLoginSuccess) {
-                onLoginSuccess(data.user);
+                if (onLoginSuccess) {
+                    onLoginSuccess(userPayload);
+                }
             }
-        } catch (_) {
-            setError('Cannot reach server. Make sure the backend is running.');
+        } catch (err) {
+            console.error(err);
+            if (err.code === 'auth/email-already-in-use') {
+                setError('Email already in use.');
+            } else if (err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
+                setError('Invalid email or password.');
+            } else if (err.code === 'auth/weak-password') {
+                setError('Password is too weak.');
+            } else {
+                setError(err.message || 'Authentication failed. Please try again.');
+            }
         } finally {
             setLoading(false);
         }
     };
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        try {
+            await firebaseSignOut(auth);
+        } catch (err) {
+            console.error("Logout error", err);
+        }
         localStorage.removeItem('pawsafe_token');
         localStorage.removeItem('pawsafe_user');
         setCurrentUser(null);

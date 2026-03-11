@@ -1,101 +1,92 @@
-// Base API URL — reads from Vite env var, falls back to localhost
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-
-/**
- * Generic GET request
- * @param {string} path - e.g. '/emergencies'
- * @returns {Promise<any>} parsed response data
- */
-export async function apiGet(path) {
-    const res = await fetch(`${BASE_URL}${path}`);
-    const json = await res.json();
-    if (!res.ok || !json.success) {
-        throw new Error(json.message || 'API error');
-    }
-    return json.data;
-}
-
-/**
- * Generic POST request (JSON body)
- * @param {string} path
- * @param {object} body
- * @returns {Promise<any>}
- */
-export async function apiPost(path, body) {
-    const res = await fetch(`${BASE_URL}${path}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-    });
-    const json = await res.json();
-    if (!res.ok || !json.success) {
-        throw new Error(json.message || 'API error');
-    }
-    return json.data;
-}
-
-/**
- * POST with FormData (for file uploads)
- * @param {string} path
- * @param {FormData} formData
- * @returns {Promise<any>}
- */
-export async function apiPostForm(path, formData) {
-    const res = await fetch(`${BASE_URL}${path}`, {
-        method: 'POST',
-        body: formData, // No Content-Type header — let browser set multipart boundary
-    });
-    const json = await res.json();
-    if (!res.ok || !json.success) {
-        throw new Error(json.message || 'API error');
-    }
-    return json.data;
-}
-
-/**
- * PATCH request (JSON body)
- * @param {string} path
- * @param {object} body
- * @returns {Promise<any>}
- */
-export async function apiPatch(path, body) {
-    const res = await fetch(`${BASE_URL}${path}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-    });
-    const json = await res.json();
-    if (!res.ok || !json.success) {
-        throw new Error(json.message || 'API error');
-    }
-    return json.data;
-}
-
-// ── Convenience helpers ────────────────────────────────────
+import { db, storage } from '../firebase';
+import { collection, getDocs, getDoc, doc, addDoc, updateDoc, query, where } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 export const emergencyApi = {
-    getAll: () => apiGet('/emergencies'),
-    submit: (formData) => apiPostForm('/emergencies', formData),
-    updateStatus: (id, status) => apiPatch(`/emergencies/${id}/status`, { status }),
+    getAll: async () => {
+        const q = query(collection(db, 'emergencies'));
+        const snap = await getDocs(q);
+        return snap.docs.map(d => ({ _id: d.id, ...d.data() }));
+    },
+    submit: async (formData) => {
+        let imageUrl = '';
+        const imageFile = formData.get('image');
+        if (imageFile && imageFile.size > 0) {
+            const storageRef = ref(storage, `emergencies/${Date.now()}_${imageFile.name}`);
+            await uploadBytes(storageRef, imageFile);
+            imageUrl = await getDownloadURL(storageRef);
+        }
+
+        const data = {
+            name: formData.get('name'),
+            phone: formData.get('phone'),
+            animalType: formData.get('animalType'),
+            issueType: formData.get('issueType'),
+            location: formData.get('location'),
+            urgency: formData.get('urgency'),
+            notes: formData.get('notes'),
+            imageUrl,
+            status: 'pending',
+            createdAt: new Date().toISOString()
+        };
+
+        const docRef = await addDoc(collection(db, 'emergencies'), data);
+        return { _id: docRef.id, ...data };
+    },
+    updateStatus: async (id, status) => {
+        const docRef = doc(db, 'emergencies', id);
+        await updateDoc(docRef, { status });
+        return { _id: id, status };
+    },
 };
 
 export const statsApi = {
-    get: () => apiGet('/stats'),
+    get: async () => {
+        const rescuedSnap = await getDocs(query(collection(db, 'emergencies'), where('status', '==', 'resolved')));
+        const pendingSnap = await getDocs(query(collection(db, 'emergencies'), where('status', '!=', 'resolved')));
+        const adoptedSnap = await getDocs(collection(db, 'adoptions'));
+        const donationsSnap = await getDocs(collection(db, 'donations'));
+        const volunteersSnap = await getDocs(query(collection(db, 'users'), where('role', '==', 'volunteer')));
+
+        let totalDonations = 0;
+        donationsSnap.forEach(d => { totalDonations += (Number(d.data().amount) || 0) });
+
+        return {
+            totalRescued: rescuedSnap.size,
+            pendingRescue: pendingSnap.size,
+            adoptedCount: adoptedSnap.size,
+            totalDonations,
+            volunteerCount: volunteersSnap.size,
+        };
+    },
 };
 
 export const animalsApi = {
-    getAll: () => apiGet('/animals'),
-    getOne: (id) => apiGet(`/animals/${id}`),
-    update: (id, body) => apiPatch(`/animals/${id}`, body),
+    getAll: async () => {
+        const snap = await getDocs(collection(db, 'animals'));
+        return snap.docs.map(d => ({ _id: d.id, ...d.data() }));
+    },
+    getOne: async (id) => {
+        const d = await getDoc(doc(db, 'animals', id));
+        return d.exists() ? { _id: d.id, ...d.data() } : null;
+    },
+    update: async (id, body) => {
+        await updateDoc(doc(db, 'animals', id), body);
+        return { _id: id, ...body };
+    },
 };
 
 export const donationsApi = {
-    submit: (body) => apiPost('/donations', body),
+    submit: async (body) => {
+        const requestData = { ...body, createdAt: new Date().toISOString() };
+        const docRef = await addDoc(collection(db, 'donations'), requestData);
+        return { _id: docRef.id, ...requestData };
+    },
 };
 
 export const ngoApi = {
-    getAll: (params = {}) => {
-        const qs = new URLSearchParams(params).toString();
-        return apiGet(`/ngos${qs ? '?' + qs : ''}`);
+    getAll: async (params = {}) => {
+        const snap = await getDocs(collection(db, 'ngos'));
+        return snap.docs.map(d => ({ _id: d.id, ...d.data() }));
     },
 };

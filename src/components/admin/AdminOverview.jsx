@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { statsApi } from '../../utils/api';
 
 export default function AdminOverview() {
     const [stats, setStats] = useState({
@@ -13,14 +14,8 @@ export default function AdminOverview() {
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const token = localStorage.getItem('pawsafe_token');
-                const res = await fetch('http://localhost:5000/api/stats/admin', {
-                    headers: { 'Authorization': `Bearer ${token}` },
-                });
-                const result = await res.json();
-                if (result.success) {
-                    setStats(result.data);
-                }
+                const data = await statsApi.get();
+                setStats(data);
             } catch (err) {
                 console.error('Failed to fetch admin stats', err);
             } finally {

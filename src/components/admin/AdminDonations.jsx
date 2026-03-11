@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { db } from '../../firebase';
+import { collection, getDocs } from 'firebase/firestore';
 
 export default function AdminDonations() {
     const [donations, setDonations] = useState([]);
@@ -7,14 +9,11 @@ export default function AdminDonations() {
     useEffect(() => {
         const fetchDonations = async () => {
             try {
-                const token = localStorage.getItem('pawsafe_token');
-                const res = await fetch('http://localhost:5000/api/donations', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await res.json();
-                if (data.success) {
-                    setDonations(data.data);
-                }
+                const snap = await getDocs(collection(db, 'donations'));
+                const data = snap.docs.map(d => ({ _id: d.id, ...d.data() }));
+                // sort descending
+                data.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+                setDonations(data);
             } catch (err) {
                 console.error('Failed to fetch donations', err);
             } finally {

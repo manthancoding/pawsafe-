@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { db } from '../../firebase';
+import { collection, getDocs, updateDoc, doc, query, where } from 'firebase/firestore';
 
 export default function AdminVolunteers() {
     const [volunteers, setVolunteers] = useState([]);
@@ -6,14 +8,10 @@ export default function AdminVolunteers() {
 
     const fetchVolunteers = async () => {
         try {
-            const token = localStorage.getItem('pawsafe_token');
-            const res = await fetch('http://localhost:5000/api/volunteers', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const data = await res.json();
-            if (data.success) {
-                setVolunteers(data.data);
-            }
+            const q = query(collection(db, 'users'), where('role', '==', 'volunteer'));
+            const snap = await getDocs(q);
+            const data = snap.docs.map(d => ({ _id: d.id, ...d.data() }));
+            setVolunteers(data);
         } catch (err) {
             console.error('Failed to fetch volunteers', err);
         } finally {
@@ -27,19 +25,8 @@ export default function AdminVolunteers() {
 
     const toggleStatus = async (id, currentStatus) => {
         try {
-            const token = localStorage.getItem('pawsafe_token');
-            const res = await fetch(`http://localhost:5000/api/volunteers/${id}`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ isActive: !currentStatus })
-            });
-            const result = await res.json();
-            if (result.success) {
-                fetchVolunteers();
-            }
+            await updateDoc(doc(db, 'users', id), { isActive: !currentStatus });
+            fetchVolunteers();
         } catch (err) {
             alert('Failed to update volunteer status');
         }

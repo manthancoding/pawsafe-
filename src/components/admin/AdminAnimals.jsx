@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { db } from '../../firebase';
+import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import './AdminAnimals.css';
 
 export default function AdminAnimals() {
@@ -8,11 +10,9 @@ export default function AdminAnimals() {
 
     const fetchAnimals = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/animals');
-            const data = await res.json();
-            if (data.success) {
-                setAnimals(data.data);
-            }
+            const snap = await getDocs(collection(db, 'animals'));
+            const data = snap.docs.map(d => ({ _id: d.id, ...d.data() }));
+            setAnimals(data);
         } catch (err) {
             console.error('Failed to fetch animals', err);
         } finally {
@@ -27,15 +27,8 @@ export default function AdminAnimals() {
     const handleDelete = async (id) => {
         if (!window.confirm('Are you sure you want to delete this animal record?')) return;
         try {
-            const token = localStorage.getItem('pawsafe_token');
-            const res = await fetch(`http://localhost:5000/api/animals/${id}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const result = await res.json();
-            if (result.success) {
-                fetchAnimals();
-            }
+            await deleteDoc(doc(db, 'animals', id));
+            fetchAnimals();
         } catch (err) {
             alert('Failed to delete animal');
         }

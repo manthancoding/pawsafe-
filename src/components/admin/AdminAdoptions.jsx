@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { db } from '../../firebase';
+import { collection, getDocs, updateDoc, doc } from 'firebase/firestore';
 
 export default function AdminAdoptions() {
     const [adoptions, setAdoptions] = useState([]);
@@ -6,14 +8,11 @@ export default function AdminAdoptions() {
 
     const fetchAdoptions = async () => {
         try {
-            const token = localStorage.getItem('pawsafe_token');
-            const res = await fetch('http://localhost:5000/api/adoptions', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const data = await res.json();
-            if (data.success) {
-                setAdoptions(data.data);
-            }
+            const snap = await getDocs(collection(db, 'adoptions'));
+            const data = snap.docs.map(d => ({ _id: d.id, ...d.data() }));
+            // sort descending
+            data.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+            setAdoptions(data);
         } catch (err) {
             console.error('Failed to fetch adoptions', err);
         } finally {
@@ -27,19 +26,8 @@ export default function AdminAdoptions() {
 
     const handleStatusUpdate = async (id, status) => {
         try {
-            const token = localStorage.getItem('pawsafe_token');
-            const res = await fetch(`http://localhost:5000/api/adoptions/${id}/status`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ status })
-            });
-            const result = await res.json();
-            if (result.success) {
-                fetchAdoptions();
-            }
+            await updateDoc(doc(db, 'adoptions', id), { status });
+            fetchAdoptions();
         } catch (err) {
             alert('Failed to update status');
         }
