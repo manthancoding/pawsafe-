@@ -1,9 +1,11 @@
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from '../utils/LanguageContext';
 import './Footer.css';
 
 export default function Footer() {
   const t = useTranslation();
   const f = t.footer;
+  const navigate = useNavigate();
 
   return (
     <footer className="footer">
@@ -24,7 +26,7 @@ export default function Footer() {
             <li><a href="#home">{f.links.home}</a></li>
             <li><a href="#about">{f.links.about}</a></li>
             <li><a href="#contact">{f.links.contact}</a></li>
-            <li><a href="#">{f.links.faq}</a></li>
+            <li><button className="footer-link-btn" onClick={() => navigate('/login')}>{f.links.admin}</button></li>
           </ul>
         </div>
 

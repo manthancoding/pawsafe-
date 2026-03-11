@@ -28,9 +28,29 @@ const userSchema = new mongoose.Schema(
             enum: ['user', 'volunteer', 'admin'],
             default: 'user',
         },
+        phone: {
+            type: String,
+            default: '',
+        },
+        city: {
+            type: String,
+            default: '',
+        },
+        favorites: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Animal'
+        }],
         avatar: {
             type: String,
             default: '',
+        },
+        otp: {
+            type: String,
+            select: false,
+        },
+        otpExpiry: {
+            type: Date,
+            select: false,
         },
     },
     { timestamps: true }

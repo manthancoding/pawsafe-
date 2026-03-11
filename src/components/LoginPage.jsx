@@ -3,31 +3,26 @@ import './LoginPage.css';
 
 const API_BASE = 'http://localhost:5000/api';
 
-export default function LoginPage({ onClose, onLoginSuccess }) {
-    const [tab, setTab] = useState('login');          // 'login' | 'signup'
+export default function LoginPage({ onClose, onLoginSuccess, user: initialUser }) {
+    const [tab, setTab] = useState('login');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [showPass, setShowPass] = useState(false);
-    const [currentUser, setCurrentUser] = useState(null);
+    const [currentUser, setCurrentUser] = useState(initialUser);
 
-    // Form state
     const [form, setForm] = useState({
         name: '',
         email: '',
+        phone: '',
+        city: '',
         password: '',
+        confirmPassword: '',
     });
 
-    // Restore session on mount
     useEffect(() => {
-        const token = localStorage.getItem('pawsafe_token');
-        const user = localStorage.getItem('pawsafe_user');
-        if (token && user) {
-            try {
-                setCurrentUser(JSON.parse(user));
-            } catch (_) { }
-        }
-    }, []);
+        if (initialUser) setCurrentUser(initialUser);
+    }, [initialUser]);
 
     const handleChange = (e) =>
         setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
@@ -36,22 +31,27 @@ export default function LoginPage({ onClose, onLoginSuccess }) {
         setTab(t);
         setError('');
         setSuccess('');
-        setForm({ name: '', email: '', password: '' });
+        setForm({ name: '', email: '', phone: '', city: '', password: '', confirmPassword: '' });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         setSuccess('');
+
+        if (tab === 'signup' && form.password !== form.confirmPassword) {
+            setError('Passwords do not match');
+            return;
+        }
+
         setLoading(true);
 
-        const endpoint = tab === 'login' ? '/auth/login' : '/auth/register';
-        const body =
-            tab === 'login'
-                ? { email: form.email, password: form.password }
-                : { name: form.name, email: form.email, password: form.password };
-
         try {
+            const endpoint = tab === 'login' ? '/auth/login' : '/auth/register';
+            const body = tab === 'login'
+                ? { email: form.email, password: form.password }
+                : { name: form.name, email: form.email, phone: form.phone, city: form.city, password: form.password };
+
             const res = await fetch(`${API_BASE}${endpoint}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -64,7 +64,6 @@ export default function LoginPage({ onClose, onLoginSuccess }) {
                 return;
             }
 
-            // Persist session
             localStorage.setItem('pawsafe_token', data.token);
             localStorage.setItem('pawsafe_user', JSON.stringify(data.user));
             setCurrentUser(data.user);
@@ -73,7 +72,9 @@ export default function LoginPage({ onClose, onLoginSuccess }) {
                 setSuccess('Account created! Welcome to PawSafe 🐾');
             }
 
-            if (onLoginSuccess) onLoginSuccess(data.user);
+            if (onLoginSuccess) {
+                onLoginSuccess(data.user);
+            }
         } catch (_) {
             setError('Cannot reach server. Make sure the backend is running.');
         } finally {
@@ -87,13 +88,12 @@ export default function LoginPage({ onClose, onLoginSuccess }) {
         setCurrentUser(null);
         setSuccess('');
         setError('');
-        setForm({ name: '', email: '', password: '' });
+        setForm({ name: '', email: '', phone: '', city: '', password: '', confirmPassword: '' });
         setTab('login');
     };
 
     return (
         <div className="login-page" onClick={(e) => e.target === e.currentTarget && onClose?.()}>
-            {/* Decorative paw prints */}
             <span className="login-paw-deco">🐾</span>
             <span className="login-paw-deco">🐾</span>
             <span className="login-paw-deco">🐾</span>
@@ -108,7 +108,7 @@ export default function LoginPage({ onClose, onLoginSuccess }) {
                 </div>
 
                 {currentUser ? (
-                    /* ── Logged-in state ── */
+                    /* Logged-in state */
                     <div className="logged-in-banner">
                         <div className="user-avatar-circle">
                             {currentUser.name?.[0]?.toUpperCase() ?? '?'}
@@ -122,7 +122,7 @@ export default function LoginPage({ onClose, onLoginSuccess }) {
                     </div>
                 ) : (
                     <>
-                        {/* ── Tabs ── */}
+                        {/* Tabs */}
                         <div className="auth-tabs">
                             <button
                                 className={`auth-tab ${tab === 'login' ? 'active' : ''}`}
@@ -140,8 +140,13 @@ export default function LoginPage({ onClose, onLoginSuccess }) {
                             </button>
                         </div>
 
-                        {/* ── Form ── */}
+                        <div className="admin-login-note">
+                            <p><strong>Administrator?</strong> Sign in with your staff credentials to access the management dashboard.</p>
+                        </div>
+
+                        {/* Form */}
                         <form className="auth-form" onSubmit={handleSubmit} key={tab}>
+
                             {tab === 'signup' && (
                                 <div className="form-group">
                                     <label htmlFor="name">Full Name</label>
@@ -161,76 +166,135 @@ export default function LoginPage({ onClose, onLoginSuccess }) {
                                 </div>
                             )}
 
-                            <div className="form-group">
-                                <label htmlFor="email">Email Address</label>
-                                <div className="input-wrapper">
-                                    <span className="input-icon">✉️</span>
-                                    <input
-                                        id="email"
-                                        name="email"
-                                        type="email"
-                                        placeholder="you@example.com"
-                                        value={form.email}
-                                        onChange={handleChange}
-                                        required
-                                        autoComplete="email"
-                                    />
+                            <div className={tab === 'signup' ? 'form-group-row' : 'form-group'}>
+                                <div className="form-group">
+                                    <label htmlFor="email">Email Address</label>
+                                    <div className="input-wrapper">
+                                        <span className="input-icon">✉️</span>
+                                        <input
+                                            id="email"
+                                            name="email"
+                                            type="email"
+                                            placeholder="you@example.com"
+                                            value={form.email}
+                                            onChange={handleChange}
+                                            required
+                                            autoComplete="email"
+                                        />
+                                    </div>
                                 </div>
+
+                                {tab === 'signup' && (
+                                    <div className="form-group">
+                                        <label htmlFor="phone">Phone Number</label>
+                                        <div className="input-wrapper">
+                                            <span className="input-icon">📞</span>
+                                            <input
+                                                id="phone"
+                                                name="phone"
+                                                type="tel"
+                                                placeholder="Your phone"
+                                                value={form.phone}
+                                                onChange={handleChange}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
-                            <div className="form-group">
-                                <label htmlFor="password">Password</label>
-                                <div className="input-wrapper">
-                                    <span className="input-icon">🔒</span>
-                                    <input
-                                        id="password"
-                                        name="password"
-                                        type={showPass ? 'text' : 'password'}
-                                        placeholder={tab === 'signup' ? 'Min. 6 characters' : 'Enter password'}
-                                        value={form.password}
-                                        onChange={handleChange}
-                                        required
-                                        minLength={6}
-                                        autoComplete={tab === 'login' ? 'current-password' : 'new-password'}
-                                    />
-                                    <button
-                                        type="button"
-                                        className="toggle-password"
-                                        onClick={() => setShowPass((v) => !v)}
-                                        aria-label="Toggle password visibility"
-                                    >
-                                        {showPass ? '🙈' : '👁️'}
-                                    </button>
-                                </div>
-                            </div>
-
-                            {error && (
-                                <div className="auth-error" role="alert">
-                                    ⚠️ {error}
+                            {tab === 'signup' && (
+                                <div className="form-group">
+                                    <label htmlFor="city">City / Location</label>
+                                    <div className="input-wrapper">
+                                        <span className="input-icon">📍</span>
+                                        <input
+                                            id="city"
+                                            name="city"
+                                            type="text"
+                                            placeholder="e.g. Mumbai, India"
+                                            value={form.city}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
                                 </div>
                             )}
-                            {success && (
-                                <div className="auth-success" role="status">
-                                    ✅ {success}
+
+                            <div className={tab === 'signup' ? 'form-group-row' : 'form-group'}>
+                                <div className="form-group">
+                                    <label htmlFor="password">Password</label>
+                                    <div className="input-wrapper">
+                                        <span className="input-icon">🔒</span>
+                                        <input
+                                            id="password"
+                                            name="password"
+                                            type={showPass ? 'text' : 'password'}
+                                            placeholder="Min. 6 characters"
+                                            value={form.password}
+                                            onChange={handleChange}
+                                            required
+                                            minLength={6}
+                                            autoComplete={tab === 'login' ? 'current-password' : 'new-password'}
+                                        />
+                                        <button
+                                            type="button"
+                                            className="toggle-password"
+                                            onClick={() => setShowPass((v) => !v)}
+                                        >
+                                            {showPass ? '🙈' : '👁️'}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {tab === 'signup' && (
+                                    <div className="form-group">
+                                        <label htmlFor="confirmPassword">Confirm Password</label>
+                                        <div className="input-wrapper">
+                                            <span className="input-icon">🔒</span>
+                                            <input
+                                                id="confirmPassword"
+                                                name="confirmPassword"
+                                                type={showPass ? 'text' : 'password'}
+                                                placeholder="Repeat password"
+                                                value={form.confirmPassword}
+                                                onChange={handleChange}
+                                                required
+                                                minLength={6}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {tab === 'login' && (
+                                <div className="login-extra">
+                                    <label className="remember-me">
+                                        <input type="checkbox" /> Remember me
+                                    </label>
+                                    <button type="button" className="forgot-password">
+                                        Forgot password?
+                                    </button>
                                 </div>
                             )}
 
                             <button className="auth-submit" type="submit" disabled={loading}>
                                 {loading ? (
-                                    <><span className="spin" /> {tab === 'login' ? 'Signing in…' : 'Creating account…'}</>
-                                ) : tab === 'login' ? (
-                                    '🐾 Sign In'
+                                    <><span className="spinner"></span> {tab === 'login' ? 'Signing in...' : 'Creating Account...'}</>
                                 ) : (
-                                    '🚀 Create Account'
+                                    tab === 'login' ? '🔑 Sign In' : '🚀 Create Account'
                                 )}
                             </button>
+
+                            {error && (
+                                <div className="auth-error" role="alert">⚠️ {error}</div>
+                            )}
+                            {success && (
+                                <div className="auth-success" role="status">✅ {success}</div>
+                            )}
                         </form>
 
                         <div className="login-footer">
                             <p>
-                                {tab === 'login'
-                                    ? "Don't have an account? "
-                                    : 'Already have an account? '}
+                                {tab === 'login' ? "Don't have an account? " : 'Already have an account? '}
                                 <button
                                     type="button"
                                     style={{

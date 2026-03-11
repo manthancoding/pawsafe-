@@ -31,6 +31,8 @@ app.use('/api/donations', require('./routes/donations'));
 app.use('/api/animals', require('./routes/animals'));
 app.use('/api/stats', require('./routes/stats'));
 app.use('/api/ngos', require('./routes/ngos'));
+app.use('/api/adoptions', require('./routes/adoptions'));
+app.use('/api/users', require('./routes/users'));
 
 // ── Health Check ──────────────────────────────────────────
 app.get('/api/health', (req, res) => {

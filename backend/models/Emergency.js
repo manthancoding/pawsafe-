@@ -18,6 +18,7 @@ const emergencySchema = new mongoose.Schema({
     name: { type: String, required: true },
     phone: { type: String, required: true },
     photoUrl: { type: String, default: null },
+    reportedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
     status: {
         type: String,
         enum: ['pending', 'active', 'accepted', 'resolved', 'declined'],

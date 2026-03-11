@@ -14,13 +14,13 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: 
+  background:
     radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
     radial-gradient(circle at 80% 80%, rgba(13, 115, 119, 0.1) 0%, transparent 50%);
   pointer-events: none;
 }
 
-.footer > * {
+.footer>* {
   position: relative;
   z-index: 2;
 }
@@ -127,4 +127,21 @@
   .social-links {
     justify-content: center;
   }
+}
+
+.footer-link-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1rem;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+  transition: var(--transition);
+}
+
+.footer-link-btn:hover {
+  color: #0D7377;
+  text-decoration: underline;
 }

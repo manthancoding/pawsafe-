@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Animal = require('../models/Animal');
+const { protect, admin } = require('../middleware/authMiddleware');
 
 // GET /api/animals — all animals in recovery
 router.get('/', async (req, res, next) => {
@@ -26,8 +27,8 @@ router.get('/:id', async (req, res, next) => {
     }
 });
 
-// POST /api/animals — add a new animal to recovery
-router.post('/', async (req, res, next) => {
+// POST /api/animals — add a new animal (Admin only)
+router.post('/', protect, admin, async (req, res, next) => {
     try {
         const doc = await Animal.create(req.body);
         res.status(201).json({ success: true, data: doc });
@@ -36,8 +37,8 @@ router.post('/', async (req, res, next) => {
     }
 });
 
-// PATCH /api/animals/:id — update status, add note or milestone
-router.patch('/:id', async (req, res, next) => {
+// PATCH /api/animals/:id — update animal (Admin only)
+router.patch('/:id', protect, admin, async (req, res, next) => {
     try {
         const { status, note, milestoneIndex, milestoneCompleted } = req.body;
         const update = {};
@@ -66,8 +67,8 @@ router.patch('/:id', async (req, res, next) => {
     }
 });
 
-// DELETE /api/animals/:id
-router.delete('/:id', async (req, res, next) => {
+// DELETE /api/animals/:id (Admin only)
+router.delete('/:id', protect, admin, async (req, res, next) => {
     try {
         await Animal.findByIdAndDelete(req.params.id);
         res.json({ success: true, message: 'Animal record deleted' });

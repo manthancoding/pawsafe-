@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from '../utils/LanguageContext';
 import './Header.css';
 
@@ -16,7 +17,9 @@ function scrollTo(selector) {
   if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-export default function Header({ onNavigate, onEmergency, language, onLanguageChange, onVolunteer }) {
+export default function Header({ onEmergency, language, onLanguageChange, onVolunteer, user, onLogout }) {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null); // 'rescue' | 'community' | 'info'
@@ -27,17 +30,20 @@ export default function Header({ onNavigate, onEmergency, language, onLanguageCh
   const currentLang = LANGUAGES.find(l => l.code === language) || LANGUAGES[0];
 
   const handleNavClick = (page) => {
-    onNavigate(page);
+    if (page === 'home') navigate('/');
+    else navigate(`/${page}`);
     setMenuOpen(false);
     setActiveDropdown(null);
   };
 
   const handleScrollTo = (selector) => {
-    onNavigate('home');
+    if (location.pathname !== '/') {
+      navigate('/');
+    }
     setMenuOpen(false);
     setActiveDropdown(null);
     // Small delay to let home page render before scrolling
-    setTimeout(() => scrollTo(selector), 80);
+    setTimeout(() => scrollTo(selector), 100);
   };
 
   // Close dropdowns when clicking outside
@@ -179,10 +185,31 @@ export default function Header({ onNavigate, onEmergency, language, onLanguageCh
             )}
           </div>
 
-          {/* Login Button */}
-          <button className="btn-login" onClick={() => onNavigate('login')}>
-            {t.header.login}
-          </button>
+          {/* Login Button / User Profile */}
+          {user ? (
+            <div className="user-profile-nav">
+              <button
+                className="user-profile-btn"
+                onClick={() => navigate(user.role === 'admin' ? '/admin' : '/dashboard')}
+              >
+                <span className="user-avatar-mini">
+                  {user.name?.[0]?.toUpperCase() ?? '👤'}
+                </span>
+                <span className="user-name-mini">{user.name.split(' ')[0]}</span>
+                <span className="nav-arrow" style={{ opacity: 0.6, marginLeft: '4px' }}>▾</span>
+              </button>
+              <div className="user-dropdown">
+                <button onClick={() => navigate(user.role === 'admin' ? '/admin' : '/dashboard')}>
+                  {user.role === 'admin' ? '📊 Admin Dashboard' : '👤 My Dashboard'}
+                </button>
+                <button onClick={onLogout} className="logout-item">🚪 Logout</button>
+              </div>
+            </div>
+          ) : (
+            <button className="btn-login" onClick={() => navigate('/login')}>
+              {t.header.login}
+            </button>
+          )}
 
           {/* Emergency Button */}
           <button className="btn-emergency" onClick={onEmergency}>
@@ -220,9 +247,25 @@ export default function Header({ onNavigate, onEmergency, language, onLanguageCh
           ))}
 
           <div className="mobile-actions">
-            <button className="btn-login" onClick={() => { onNavigate('login'); setMenuOpen(false); }}>
-              {t.header.login}
-            </button>
+            {user ? (
+              <>
+                <button className="mobile-nav-link" onClick={() => { navigate(user.role === 'admin' ? '/admin' : '/dashboard'); setMenuOpen(false); }}>
+                  {user.role === 'admin' ? '📊 Admin Dashboard' : '👤 My Dashboard'}
+                </button>
+                <button className="btn-login logged-in" onClick={() => { onLogout(); setMenuOpen(false); }}>
+                  🚪 Logout ({user.name.split(' ')[0]})
+                </button>
+              </>
+            ) : (
+              <button className="btn-login" onClick={() => { navigate('/login'); setMenuOpen(false); }}>
+                {t.header.login}
+              </button>
+            )}
+            {!user && (
+              <button className="mobile-nav-link" onClick={() => { navigate('/login'); setMenuOpen(false); }} style={{ marginTop: '0.5rem', border: '1px dashed rgba(13, 115, 119, 0.4)' }}>
+                {t.ngo.staffPortal}
+              </button>
+            )}
             <button className="btn-volunteer" onClick={() => { onVolunteer(); setMenuOpen(false); }}>
               {t.header.volunteer}
             </button>

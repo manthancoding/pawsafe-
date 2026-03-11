@@ -100,6 +100,7 @@ const translations = {
                 about: 'About Us',
                 contact: 'Contact',
                 faq: 'FAQ',
+                admin: 'Admin Portal',
             },
             resources: 'Resources',
             resourceLinks: {
@@ -167,6 +168,7 @@ const translations = {
             reviews: 'reviews',
             callNow: 'Call Now',
             noResults: 'No centres match your filters. Try adjusting them.',
+            staffPortal: '🔐 Staff Portal',
         },
         support: {
             tag: 'Support a Rescue',
@@ -252,7 +254,7 @@ const translations = {
         footer: {
             tagline: 'आपातकाल में पशुओं की जान बचाने के लिए समुदायों को जोड़ना।',
             quickLinks: 'त्वरित लिंक',
-            links: { home: 'होम', about: 'हमारे बारे में', contact: 'संपर्क', faq: 'अक्सर पूछे जाने वाले प्रश्न' },
+            links: { home: 'होम', about: 'हमारे बारे में', contact: 'संपर्क', faq: 'अक्सर पूछे जाने वाले प्रश्न', admin: 'एडमिन पोर्टल' },
             resources: 'संसाधन',
             resourceLinks: { partners: 'बचाव साझेदार', care: 'पशु देखभाल टिप्स', safety: 'सुरक्षा गाइड', blog: 'ब्लॉग' },
             legal: 'कानूनी',
@@ -302,6 +304,7 @@ const translations = {
             reviews: 'समीक्षाएं',
             callNow: 'अभी कॉल करें',
             noResults: 'कोई परिणाम नहीं मिला। फ़िल्टर बदलें।',
+            staffPortal: '🔐 स्टाफ पोर्टल',
         },
         support: {
             tag: 'बचाव में सहायता करें',
@@ -387,7 +390,7 @@ const translations = {
         footer: {
             tagline: 'அவசரநிலைகளில் விலங்கு உயிர்களை காப்பாற்ற சமூகங்களை இணைக்கிறோம்.',
             quickLinks: 'விரைவு இணைப்புகள்',
-            links: { home: 'முகப்பு', about: 'எங்களைப் பற்றி', contact: 'தொடர்பு', faq: 'அடிக்கடி கேட்கப்படும் கேள்விகள்' },
+            links: { home: 'முகப்பு', about: 'எங்களைப் பற்றி', contact: 'தொடர்பு', faq: 'அடிக்கডি கேட்கப்படும் கேள்விகள்', admin: 'நிர்வாக மையம்' },
             resources: 'வளங்கள்',
             resourceLinks: { partners: 'மீட்பு கூட்டாளர்கள்', care: 'விலங்கு பராமரிப்பு குறிப்புகள்', safety: 'பாதுகாப்பு வழிகாட்டி', blog: 'வலைப்பதிவு' },
             legal: 'சட்டப்பூர்வம்',
@@ -437,6 +440,7 @@ const translations = {
             reviews: 'மதிப்புகள்',
             callNow: 'இப்போது அழைக்கவும்',
             noResults: 'உங்கள் வடிகட்டிக்கு பொருத்தமான மையங்கள் இல்லை.',
+            staffPortal: '🔐 பணியாளர் மையம்',
         },
         support: {
             tag: 'மீட்புக்கு ஆதரவு',
@@ -522,7 +526,7 @@ const translations = {
         footer: {
             tagline: 'అత్యవసర పరిస్థితుల్లో జంతువుల జీవితాలను కాపాడేందుకు సమాజాలను కనెక్ట్ చేస్తోంది.',
             quickLinks: 'త్వరిత లింక్‌లు',
-            links: { home: 'హోమ్', about: 'మా గురించి', contact: 'సంప్రదింపు', faq: 'తరచుగా అడిగే ప్రశ్నలు' },
+            links: { home: 'హోమ్', about: 'మా గురించి', contact: 'సంప్రదింపు', faq: 'తరచుగా అడిగే ప్రశ్నలు', admin: 'అడ్మిన్ పోర్టల్' },
             resources: 'వనరులు',
             resourceLinks: { partners: 'రక్షణ భాగస్వాములు', care: 'జంతు సంరక్షణ చిట్కాలు', safety: 'సురక్షిత మార్గదర్శి', blog: 'బ్లాగ్' },
             legal: 'చట్టపరమైన',
@@ -572,6 +576,7 @@ const translations = {
             reviews: 'సమీక్షలు',
             callNow: 'ఇప్పుడు కాల్ చేయండి',
             noResults: 'మీ ఫిల్టర్లకు సెంటర్లు లేవు.',
+            staffPortal: '🔐 స్టాఫ్ పోర్టల్',
         },
         support: {
             tag: 'రెస్క్యూకు సహాయం',
@@ -657,7 +662,7 @@ const translations = {
         footer: {
             tagline: 'জরুরি পরিস্থিতিতে পশুর জীবন বাঁচাতে সম্প্রদায়গুলিকে সংযুক্ত করছে।',
             quickLinks: 'দ্রুত লিঙ্ক',
-            links: { home: 'হোম', about: 'আমাদের সম্পর্কে', contact: 'যোগাযোগ', faq: 'প্রায়শই জিজ্ঞাসিত প্রশ্ন' },
+            links: { home: 'হোম', about: 'আমাদের সম্পর্কে', contact: 'যোগাযোগ', faq: 'প্রায়শই জিজ্ঞাসিত প্রশ্ন', admin: 'অ্যাডমিন পোর্টাল' },
             resources: 'সম্পদ',
             resourceLinks: { partners: 'উদ্ধার অংশীদার', care: 'পশু যত্নের টিপস', safety: 'নিরাপত্তা গাইড', blog: 'ব্লগ' },
             legal: 'আইনি',
@@ -707,6 +712,7 @@ const translations = {
             reviews: 'মতামত',
             callNow: 'এখনই ফোন করুন',
             noResults: 'আপনার ফিল্টারে কোনো কেন্দ্র নেই।',
+            staffPortal: '🔐 স্টাফ পোর্টাল',
         },
         support: {
             tag: 'উদ্ধারে সহায়তা',
