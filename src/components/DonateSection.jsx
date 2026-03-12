@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useTranslation } from '../utils/LanguageContext';
 import { donationsApi } from '../utils/api';
+import PaymentGateway from './PaymentGateway';
+import { incrementGlobalImpactStats } from '../utils/counterUtils';
 import './DonateSection.css';
 
 const CAUSES = [
@@ -47,37 +49,48 @@ export default function DonateSection() {
     const [preset, setPreset] = useState(null);
     const [plan, setPlan] = useState('care');
     const [showTY, setShowTY] = useState(false);
+    const [showGateway, setShowGateway] = useState(false);
+    const [pendingDonation, setPendingDonation] = useState(null);
 
     const finalAmount = preset ?? (parseInt(amount) || 0);
     const isValid = finalAmount >= 1;
 
-    const handleOneTimeDonate = async () => {
+    const handleOneTimeDonate = () => {
         if (!isValid) return;
+        setPendingDonation({
+            type: 'onetime',
+            cause,
+            amount: finalAmount,
+        });
+        setShowGateway(true);
+    };
+
+    const handleSubscribe = () => {
+        const p = MONTHLY_PLANS.find(mp => mp.id === plan);
+        if (!p) return;
+        setPendingDonation({
+            type: 'monthly',
+            cause,
+            amount: p.amount,
+            plan,
+        });
+        setShowGateway(true);
+    };
+
+    const processDonation = async () => {
+        if (!pendingDonation) return;
+
         try {
-            await donationsApi.submit({
-                cause,
-                amount: finalAmount,
-                type: 'onetime',
-            });
+            await donationsApi.submit(pendingDonation);
         } catch (err) {
             console.warn('Donation record failed (backend may be offline):', err.message);
         }
-        setShowTY(true);
-    };
 
-    const handleSubscribe = async () => {
-        try {
-            const p = MONTHLY_PLANS.find(mp => mp.id === plan);
-            await donationsApi.submit({
-                cause,
-                amount: p?.amount || 0,
-                type: 'monthly',
-                plan,
-            });
-        } catch (err) {
-            console.warn('Subscription record failed (backend may be offline):', err.message);
-        }
+        incrementGlobalImpactStats(pendingDonation.amount);
+
+        setShowGateway(false);
         setShowTY(true);
+        setPendingDonation(null);
     };
 
     const selectedCause = CAUSES.find(c => c.id === cause);
@@ -222,6 +235,15 @@ export default function DonateSection() {
                     ))}
                 </div>
             </div>
+
+            {showGateway && pendingDonation && (
+                <PaymentGateway
+                    amount={pendingDonation.amount}
+                    causeLabel={d.causes[selectedCause?.key] || pendingDonation.cause}
+                    onSuccess={processDonation}
+                    onClose={() => setShowGateway(false)}
+                />
+            )}
 
             {showTY && (
                 <ThankYouModal

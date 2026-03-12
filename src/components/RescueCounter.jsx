@@ -1,24 +1,42 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from '../utils/LanguageContext';
 import { statsApi } from '../utils/api';
+import { getGlobalImpactStatsOffsets } from '../utils/counterUtils';
 import './RescueCounter.css';
 
 // Animate a number from 0 to target
 function useCountUp(target, duration = 2000, start = false) {
     const [count, setCount] = useState(0);
+    const safeTarget = Number(target) || 0; // Prevent NaN
+
     useEffect(() => {
-        if (!start) return;
+        if (!start || safeTarget === 0) {
+            setCount(safeTarget);
+            return;
+        }
+
         let startTime = null;
+        let animationFrame;
+
         const step = (timestamp) => {
             if (!startTime) startTime = timestamp;
             const progress = Math.min((timestamp - startTime) / duration, 1);
             // Ease-out cubic
             const eased = 1 - Math.pow(1 - progress, 3);
-            setCount(Math.floor(eased * target));
-            if (progress < 1) requestAnimationFrame(step);
+            setCount(Math.floor(eased * safeTarget));
+            if (progress < 1) {
+                animationFrame = requestAnimationFrame(step);
+            }
         };
-        requestAnimationFrame(step);
-    }, [target, duration, start]);
+        animationFrame = requestAnimationFrame(step);
+
+        return () => {
+            if (animationFrame) {
+                cancelAnimationFrame(animationFrame);
+            }
+        };
+    }, [safeTarget, duration, start]);
+
     return count;
 }
 
@@ -55,15 +73,46 @@ function StatCard({ icon, label, target, suffix = '', color }) {
 
 export default function RescueCounter() {
     const t = useTranslation();
-    const s = t.stats;
+    const s = t.stats || {
+        live: 'LIVE',
+        heading: 'Live Rescue Counter',
+        subtitle: 'Real-time impact across our network',
+        rescued: 'ANIMALS RESCUED TODAY',
+        active: 'ACTIVE RESCUE REQUESTS',
+        ngos: 'VERIFIED NGOS',
+        volunteers: 'ACTIVE VOLUNTEERS'
+    };
 
-    // Fallback values shown while loading or if backend unavailable
-    const [stats, setStats] = useState({ rescued: 1482, active: 37, ngos: 218, volunteers: 3940 });
+    // Calculate random fallback values shown while loading or if backend unavailable
+    const [stats, setStats] = useState({
+        rescued: 1400 + Math.floor(Math.random() * 200),
+        active: 20 + Math.floor(Math.random() * 30),
+        ngos: 200 + Math.floor(Math.random() * 50),
+        volunteers: 3800 + Math.floor(Math.random() * 300)
+    });
 
     useEffect(() => {
+        const offsets = getGlobalImpactStatsOffsets();
+
         statsApi.get()
-            .then((data) => setStats(data))
-            .catch(() => { /* keep fallback values */ });
+            .then((data) => {
+                if (data && Object.keys(data).length > 0) {
+                    setStats((prev) => ({
+                        rescued: (data.totalRescued || prev.rescued) + offsets.rescued,
+                        active: (data.pendingRescue || prev.active) + offsets.active,
+                        ngos: data.ngos || prev.ngos,
+                        volunteers: data.volunteers || prev.volunteers
+                    }));
+                }
+            })
+            .catch((err) => {
+                console.error("Failed to load stats, using random fallback values.", err);
+                setStats((prev) => ({
+                    ...prev,
+                    rescued: prev.rescued + offsets.rescued,
+                    active: prev.active + offsets.active
+                }));
+            });
     }, []);
 
     const cards = [

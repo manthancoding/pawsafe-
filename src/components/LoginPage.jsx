@@ -1,9 +1,13 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { auth, db } from '../firebase';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut as firebaseSignOut } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
-import './LoginPage.css'; export default function LoginPage({ onClose, onLoginSuccess, user: initialUser }) {
-    const [tab, setTab] = useState('login');
+import './LoginPage.css';
+
+export default function LoginPage({ onClose, onLoginSuccess, user: initialUser }) {
+    const location = useLocation();
+    const [tab, setTab] = useState(location.state?.tab || 'login');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
@@ -33,14 +37,37 @@ import './LoginPage.css'; export default function LoginPage({ onClose, onLoginSu
         setForm({ name: '', email: '', phone: '', city: '', password: '', confirmPassword: '' });
     };
 
+    const validatePassword = (password) => {
+        const hasUpperCase = /[A-Z]/.test(password);
+        const hasLowerCase = /[a-z]/.test(password);
+        const hasNumbers = /\d/.test(password);
+        const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+        const isValidLength = password.length >= 8;
+
+        if (!isValidLength) return "Password must be at least 8 characters long.";
+        if (!hasUpperCase) return "Password must contain at least one uppercase letter (A-Z).";
+        if (!hasLowerCase) return "Password must contain at least one lowercase letter (a-z).";
+        if (!hasNumbers) return "Password must contain at least one number (0-9).";
+        if (!hasSpecialChar) return "Password must contain at least one special character (!@#$%^&* etc).";
+        return null;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         setSuccess('');
 
-        if (tab === 'signup' && form.password !== form.confirmPassword) {
-            setError('Passwords do not match');
-            return;
+        if (tab === 'signup') {
+            const passwordError = validatePassword(form.password);
+            if (passwordError) {
+                setError(passwordError);
+                return;
+            }
+
+            if (form.password !== form.confirmPassword) {
+                setError('Passwords do not match');
+                return;
+            }
         }
 
         setLoading(true);
@@ -96,7 +123,7 @@ import './LoginPage.css'; export default function LoginPage({ onClose, onLoginSu
             } else if (err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
                 setError('Invalid email or password.');
             } else if (err.code === 'auth/weak-password') {
-                setError('Password is too weak.');
+                setError('Password is too weak. Ensure it is at least 8 characters long and contains uppercase, lowercase, numbers, and special characters.');
             } else {
                 setError(err.message || 'Authentication failed. Please try again.');
             }
@@ -256,11 +283,11 @@ import './LoginPage.css'; export default function LoginPage({ onClose, onLoginSu
                                             id="password"
                                             name="password"
                                             type={showPass ? 'text' : 'password'}
-                                            placeholder="Min. 6 characters"
+                                            placeholder={tab === 'signup' ? "8+ chars, 1 uppercase, 1 number, 1 special" : "Your password"}
                                             value={form.password}
                                             onChange={handleChange}
                                             required
-                                            minLength={6}
+                                            minLength={8}
                                             autoComplete={tab === 'login' ? 'current-password' : 'new-password'}
                                         />
                                         <button
@@ -286,7 +313,7 @@ import './LoginPage.css'; export default function LoginPage({ onClose, onLoginSu
                                                 value={form.confirmPassword}
                                                 onChange={handleChange}
                                                 required
-                                                minLength={6}
+                                                minLength={8}
                                             />
                                         </div>
                                     </div>

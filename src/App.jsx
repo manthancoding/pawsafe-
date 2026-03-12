@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import './App.css';
 import { LanguageContext } from './utils/LanguageContext';
 import Header from './components/Header';
@@ -50,6 +50,7 @@ function App() {
   const [showVolunteerDash, setShowVolunteerDash] = useState(false);
   const [user, setUser] = useState(null);
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Load user from localStorage on mount
   useEffect(() => {
@@ -100,17 +101,9 @@ function App() {
             !showEmergencyForm ? (
               <>
                 <Hero onEmergency={handleEmergency} />
-                <RescueCounter />
-                <Features />
-                <HowItWorks />
-                <SupportRescue />
-                <NGOFinder />
-                <DonateSection />
-                <SeasonalAlerts />
-                <AnimalBiteGuide />
                 <ReadyToHelp
                   onVolunteer={() => setShowVolunteerDash(true)}
-                  onDonate={() => document.querySelector('.donate-section')?.scrollIntoView({ behavior: 'smooth' })}
+                  onDonate={() => navigate('/donate')}
                   onEmergency={handleEmergency}
                 />
                 <Footer />
@@ -135,6 +128,15 @@ function App() {
           <Route path="/report" element={<EmergencyForm onClose={() => window.history.back()} />} />
           <Route path="/about" element={<><AboutPage /><Footer /></>} />
           <Route path="/contact" element={<><ContactPage /><Footer /></>} />
+
+          <Route path="/how-it-works" element={<><HowItWorks /><Footer /></>} />
+          <Route path="/rescue-counter" element={<><RescueCounter /><Footer /></>} />
+          <Route path="/ngo-finder" element={<><NGOFinder /><Footer /></>} />
+          <Route path="/support-rescue" element={<><SupportRescue /><Footer /></>} />
+          <Route path="/donate" element={<><DonateSection /><Footer /></>} />
+          <Route path="/features" element={<><Features /><Footer /></>} />
+          <Route path="/bite-guide" element={<><AnimalBiteGuide /><Footer /></>} />
+          <Route path="/seasonal-alerts" element={<><SeasonalAlerts /><Footer /></>} />
 
           {/* Admin Routes */}
           <Route element={<ProtectedRoute user={user} requiredRole="admin" />}>

@@ -1,98 +1,18 @@
 /* ─────────────────────────────────────────
-   NGO Finder Section
+   Lightweight NGO Finder Section
 ───────────────────────────────────────── */
 .ngo-finder {
     padding: 5rem 0 4rem;
     background: linear-gradient(180deg, #f7fffe 0%, #f0f4ff 100%);
-}
-
-/* ── Filter Bar ── */
-.filter-bar {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-    background: white;
-    border-radius: 16px;
-    padding: 1rem 1.25rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    margin-bottom: 2rem;
-}
-
-.filter-group {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.filter-label {
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: #4a5568;
-    white-space: nowrap;
-}
-
-.filter-select {
-    border: 1.5px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 0.4rem 0.75rem;
-    font-size: 0.88rem;
-    color: #1a202c;
-    background: white;
-    cursor: pointer;
-    outline: none;
-    transition: border-color 0.18s;
-}
-
-.filter-select:focus {
-    border-color: var(--primary-color, #0d7377);
-}
-
-.filter-toggles {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-}
-
-.filter-toggle {
-    background: #f1f5f9;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 20px;
-    padding: 0.4rem 0.85rem;
-    font-size: 0.82rem;
-    font-weight: 600;
-    cursor: pointer;
-    color: #4a5568;
-    transition: all 0.18s ease;
-}
-
-.filter-toggle:hover {
-    border-color: #0d7377;
-    color: #0d7377;
-    background: rgba(13, 115, 119, 0.07);
-}
-
-.filter-toggle.active {
-    background: rgba(13, 115, 119, 0.12);
-    border-color: #0d7377;
-    color: #0d7377;
-    font-weight: 700;
-}
-
-.filter-count {
-    margin-left: auto;
-    font-size: 0.82rem;
-    color: #718096;
-    font-weight: 600;
-    white-space: nowrap;
+    min-height: 50vh;
 }
 
 /* ── Grid ── */
-.ngo-grid {
+.ngo-grid.list-mode {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1.5rem;
+    margin-top: 2rem;
 }
 
 /* ── Card ── */
@@ -105,12 +25,13 @@
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    transition: transform 0.22s ease, box-shadow 0.22s ease;
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.2s;
 }
 
 .ngo-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 12px 32px rgba(13, 115, 119, 0.15);
+    border-color: rgba(13, 115, 119, 0.2);
 }
 
 .ngo-card-header {
@@ -137,174 +58,108 @@
 }
 
 .ngo-name {
-    font-size: 1rem;
+    font-size: 1.05rem;
     font-weight: 700;
     color: #1a202c;
-    margin: 0 0 2px;
+    margin: 0 0 4px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .ngo-city {
-    font-size: 0.78rem;
-    color: #718096;
-    margin: 0;
-}
-
-.ngo-distance-badge {
-    background: rgba(13, 115, 119, 0.1);
-    color: #0d7377;
-    font-size: 0.75rem;
-    font-weight: 700;
-    padding: 0.25rem 0.6rem;
-    border-radius: 20px;
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-
-.ngo-speciality {
-    font-size: 0.82rem;
+    font-size: 0.85rem;
     color: #4a5568;
     margin: 0;
-    line-height: 1.45;
+    font-weight: 500;
 }
 
-/* ── Rating ── */
-.ngo-rating-row {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-}
-
-.stars {
-    display: flex;
-    gap: 1px;
-}
-
-.star {
-    color: #d1d5db;
-    font-size: 0.95rem;
-}
-
-.star.filled {
-    color: #f59e0b;
-}
-
-.rating-value {
-    font-size: 0.88rem;
-    font-weight: 700;
-    color: #1a202c;
-}
-
-.rating-count {
-    font-size: 0.78rem;
-    color: #718096;
-}
-
-/* ── Tags ── */
-.ngo-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-}
-
-.ngo-tag {
-    font-size: 0.72rem;
-    font-weight: 700;
-    padding: 0.22rem 0.55rem;
-    border-radius: 6px;
-    letter-spacing: 0.02em;
-}
-
-.tag-247 {
-    background: rgba(13, 115, 119, 0.1);
-    color: #0d7377;
-}
-
-.tag-ambulance {
-    background: rgba(229, 57, 53, 0.1);
-    color: #c62828;
-}
-
-.tag-wildlife {
-    background: rgba(245, 124, 0, 0.1);
-    color: #e65100;
-}
-
-/* ── Contact ── */
-.ngo-contact {
-    background: #f9fafb;
-    border-radius: 8px;
-    padding: 0.5rem 0.75rem;
-}
-
-.ngo-phone {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #2d3748;
-}
-
-/* ── Call Now Button ── */
-.btn-call-now {
-    display: block;
-    width: 100%;
-    background: linear-gradient(135deg, #0d7377, #14a085);
-    color: white;
-    border: none;
-    padding: 0.75rem;
-    border-radius: 10px;
-    font-weight: 700;
-    font-size: 0.92rem;
-    text-align: center;
-    cursor: pointer;
-    text-decoration: none;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-    box-shadow: 0 4px 14px rgba(13, 115, 119, 0.3);
+/* ── Action Buttons ── */
+.ngo-actions-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
     margin-top: auto;
 }
 
-.btn-call-now:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(13, 115, 119, 0.45);
+.btn-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.7rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1.5px solid transparent;
 }
 
-/* ── Empty State ── */
+.btn-call {
+    background: #e6f7ec;
+    color: #27ae60;
+}
+
+.btn-call:hover:not([disabled]) {
+    background: #d4f1e0;
+    color: #219653;
+}
+
+.btn-dir {
+    background: #ebf4ff;
+    color: #3182ce;
+}
+
+.btn-dir:hover {
+    background: #dbeafe;
+    color: #2b6cb0;
+}
+
+
+/* ── Empty/Loading State ── */
 .ngo-empty {
     text-align: center;
-    padding: 4rem 1rem;
-    color: #718096;
+    padding: 3rem 1rem;
+    color: #4a5568;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    margin-top: 2rem;
 }
 
-.ngo-empty span {
+.ngo-empty span:not(.spinner) {
     font-size: 3rem;
     display: block;
-    margin-bottom: 0.75rem;
+    margin-bottom: 1rem;
 }
 
 .ngo-empty p {
     font-size: 1rem;
     font-weight: 600;
+    margin: 0;
+}
+
+.spinner {
+    border: 3px solid rgba(13, 115, 119, 0.1);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 /* ── Responsive ── */
-@media (max-width: 960px) {
-    .ngo-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
 @media (max-width: 580px) {
-    .ngo-grid {
+    .ngo-grid.list-mode {
         grid-template-columns: 1fr;
-    }
-
-    .filter-bar {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .filter-count {
-        margin-left: 0;
     }
 }

@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from '../utils/LanguageContext';
+import PaymentGateway from './PaymentGateway';
+import { incrementGlobalImpactStats } from '../utils/counterUtils';
 import './SupportRescue.css';
 
 const MOCK_CASES = [
@@ -38,9 +40,23 @@ const MOCK_CASES = [
     },
 ];
 
-function DonateModal({ animal, onClose, t }) {
+function DonateModal({ animal, onClose, onPaymentSuccess, t }) {
     const [amount, setAmount] = useState('');
+    const [showGateway, setShowGateway] = useState(false);
     const isValid = parseInt(amount) >= 1;
+
+    if (showGateway) {
+        return (
+            <PaymentGateway
+                amount={amount}
+                causeLabel={animal.name}
+                onSuccess={() => {
+                    onPaymentSuccess(parseInt(amount));
+                }}
+                onClose={() => setShowGateway(false)}
+            />
+        );
+    }
 
     return (
         <div className="modal-overlay" onClick={onClose}>
@@ -70,7 +86,7 @@ function DonateModal({ animal, onClose, t }) {
                 <button
                     className="btn-donate-confirm"
                     disabled={!isValid}
-                    onClick={() => { alert(`Thank you for donating ₹${parseInt(amount).toLocaleString('en-IN')} for ${animal.name}! 🐾`); onClose(); }}
+                    onClick={() => setShowGateway(true)}
                 >
                     💝 {t.support.donateNow} ₹{isValid ? parseInt(amount).toLocaleString('en-IN') : '—'}
                 </button>
@@ -79,7 +95,7 @@ function DonateModal({ animal, onClose, t }) {
     );
 }
 
-function RescueCard({ animal, t }) {
+function RescueCard({ animal, onDonate, t }) {
     const [showModal, setShowModal] = useState(false);
     const pct = Math.min(Math.round((animal.raised / animal.required) * 100), 100);
     const remaining = animal.required - animal.raised;
@@ -134,13 +150,32 @@ function RescueCard({ animal, t }) {
                 </div>
             </div>
 
-            {showModal && <DonateModal animal={animal} onClose={() => setShowModal(false)} t={t} />}
+            {showModal && <DonateModal
+                animal={animal}
+                onClose={() => setShowModal(false)}
+                onPaymentSuccess={(amount) => {
+                    setShowModal(false);
+                    onDonate(animal.id, amount);
+                }}
+                t={t}
+            />}
         </>
     );
 }
 
 export default function SupportRescue() {
     const t = useTranslation();
+    const [cases, setCases] = useState(MOCK_CASES);
+
+    const handleSuccessfulDonation = (animalId, currentAmount) => {
+        // Update local card stat
+        setCases(prev => prev.map(c =>
+            c.id === animalId ? { ...c, raised: c.raised + currentAmount } : c
+        ));
+
+        // Update global stat offset
+        incrementGlobalImpactStats(currentAmount);
+    };
 
     return (
         <section className="support-rescue">
@@ -151,8 +186,8 @@ export default function SupportRescue() {
                     <p className="section-subtitle">{t.support.subtitle}</p>
                 </div>
                 <div className="rescue-cards-grid">
-                    {MOCK_CASES.map(animal => (
-                        <RescueCard key={animal.id} animal={animal} t={t} />
+                    {cases.map(animal => (
+                        <RescueCard key={animal.id} animal={animal} onDonate={handleSuccessfulDonation} t={t} />
                     ))}
                 </div>
             </div>

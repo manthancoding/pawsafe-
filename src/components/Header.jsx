@@ -11,11 +11,7 @@ const LANGUAGES = [
   { code: 'bn', label: 'বাংলা', full: 'বাংলা' },
 ];
 
-// Scroll to section helper
-function scrollTo(selector) {
-  const el = document.querySelector(selector);
-  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
+// Router handles navigation
 
 export default function Header({ onEmergency, language, onLanguageChange, onVolunteer, user, onLogout }) {
   const navigate = useNavigate();
@@ -36,15 +32,7 @@ export default function Header({ onEmergency, language, onLanguageChange, onVolu
     setActiveDropdown(null);
   };
 
-  const handleScrollTo = (selector) => {
-    if (location.pathname !== '/') {
-      navigate('/');
-    }
-    setMenuOpen(false);
-    setActiveDropdown(null);
-    // Small delay to let home page render before scrolling
-    setTimeout(() => scrollTo(selector), 100);
-  };
+  // handleScrollTo is removed as it's no longer needed
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -75,28 +63,28 @@ export default function Header({ onEmergency, language, onLanguageChange, onVolu
       id: 'rescue',
       label: '🐾 Rescue',
       items: [
-        { label: '📍 How It Works', action: () => handleScrollTo('.how-it-works') },
+        { label: '📍 How It Works', action: () => handleNavClick('how-it-works') },
         { label: '🚨 Report Emergency', action: () => { onEmergency(); setMenuOpen(false); setActiveDropdown(null); } },
-        { label: '🏥 Find NGOs', action: () => handleScrollTo('.ngo-finder') },
-        { label: '📊 Live Counter', action: () => handleScrollTo('.rescue-counter') },
+        { label: '🏥 Find NGOs', action: () => handleNavClick('ngo-finder') },
+        { label: '📊 Live Counter', action: () => handleNavClick('rescue-counter') },
       ],
     },
     {
       id: 'community',
       label: '🤝 Community',
       items: [
-        { label: '🌟 Support a Rescue', action: () => handleScrollTo('.support-rescue') },
-        { label: '💰 Donate', action: () => handleScrollTo('.donate-section') },
+        { label: '🌟 Support a Rescue', action: () => handleNavClick('support-rescue') },
+        { label: '💰 Donate', action: () => handleNavClick('donate') },
         { label: '🙋 Volunteer', action: () => { onVolunteer(); setMenuOpen(false); setActiveDropdown(null); } },
-        { label: '⚙️ Features', action: () => handleScrollTo('.features') },
+        { label: '⚙️ Features', action: () => handleNavClick('features') },
       ],
     },
     {
       id: 'info',
       label: 'ℹ️ Info',
       items: [
-        { label: '🐕 Animal Bite Guide', action: () => handleScrollTo('.bite-guide-section') },
-        { label: '🌦️ Seasonal Alerts', action: () => handleScrollTo('.seasonal-alerts') },
+        { label: '🐕 Animal Bite Guide', action: () => handleNavClick('bite-guide') },
+        { label: '🌦️ Seasonal Alerts', action: () => handleNavClick('seasonal-alerts') },
         { label: '📖 About Us', action: () => handleNavClick('about') },
         { label: '📬 Contact', action: () => handleNavClick('contact') },
       ],

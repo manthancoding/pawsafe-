@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './ReadyToHelp.css';
 
 // ── Animated counter hook ──────────────────────────────────
@@ -195,8 +196,8 @@ function SignUpForm({ onClose }) {
 
 // ── Main Section ───────────────────────────────────────────
 export default function ReadyToHelp({ onVolunteer, onDonate, onEmergency }) {
-    const [showForm, setShowForm] = useState(false);
     const [activeRole, setActiveRole] = useState(null);
+    const navigate = useNavigate();
 
     const handleRoleCTA = (roleId) => {
         if (roleId === 'volunteer') { onVolunteer?.(); }
@@ -246,7 +247,7 @@ export default function ReadyToHelp({ onVolunteer, onDonate, onEmergency }) {
                                 >
                                     {role.cta}
                                 </button>
-                                <button className="btn-role-form" onClick={() => setShowForm(true)}>
+                                <button className="btn-role-form" onClick={() => navigate('/login', { state: { tab: 'signup' } })}>
                                     or Sign Up →
                                 </button>
                             </div>
@@ -254,25 +255,19 @@ export default function ReadyToHelp({ onVolunteer, onDonate, onEmergency }) {
                     ))}
                 </div>
 
-                {/* Sign-up form (inline toggle) */}
-                {showForm ? (
-                    <div className="form-panel">
-                        <SignUpForm onClose={() => setShowForm(false)} />
-                    </div>
-                ) : (
-                    <div className="cta-banner">
-                        <div className="cta-banner-content">
-                            <span className="cta-banner-icon">🐾</span>
-                            <div>
-                                <strong>Not sure where to start?</strong>
-                                <p>Register in 60 seconds — we'll match you with the right role based on your skills and availability.</p>
-                            </div>
+                {/* Sign-up CTA Banner */}
+                <div className="cta-banner">
+                    <div className="cta-banner-content">
+                        <span className="cta-banner-icon">🐾</span>
+                        <div>
+                            <strong>Not sure where to start?</strong>
+                            <p>Register in 60 seconds — we'll match you with the right role based on your skills and availability.</p>
                         </div>
-                        <button className="btn-open-form" onClick={() => setShowForm(true)}>
-                            ✍️ Quick Registration
-                        </button>
                     </div>
-                )}
+                    <button className="btn-open-form" onClick={() => navigate('/login', { state: { tab: 'signup' } })}>
+                        ✍️ Quick Registration
+                    </button>
+                </div>
 
                 {/* Testimonials */}
                 <div className="testimonials">
