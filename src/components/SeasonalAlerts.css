@@ -1,0 +1,392 @@
+/* ─────────────────────────────────────────
+   Seasonal Alert System
+───────────────────────────────────────── */
+.seasonal-alerts {
+    padding: 5rem 0 4rem;
+    transition: background 0.4s ease;
+}
+
+/* ── Alert Tabs ── */
+.alert-tabs {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.alert-tab-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 50px;
+    border: 2px solid #e2e8f0;
+    background: white;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: #4a5568;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.alert-tab-btn:hover {
+    border-color: var(--ac, #0d7377);
+    color: var(--ac, #0d7377);
+}
+
+.alert-tab-btn.active {
+    background: var(--ac, #0d7377);
+    border-color: var(--ac, #0d7377);
+    color: white;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+
+.live-dot {
+    width: 7px;
+    height: 7px;
+    background: #4caf50;
+    border-radius: 50%;
+    animation: pulse-dot 1.5s infinite;
+}
+
+@keyframes pulse-dot {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.5;
+        transform: scale(1.4);
+    }
+}
+
+/* ── Main Alert Card ── */
+.alert-card {
+    background: white;
+    border-radius: 20px;
+    border: 2px solid #e2e8f0;
+    padding: 1.75rem;
+    box-shadow: 0 6px 28px rgba(0, 0, 0, 0.08);
+    margin-bottom: 1.5rem;
+    transition: border-color 0.3s;
+}
+
+.alert-card-top {
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+    margin-bottom: 1.25rem;
+}
+
+.alert-icon-wrap {
+    width: 72px;
+    height: 72px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.alert-big-icon {
+    font-size: 2.6rem;
+}
+
+.alert-info {
+    flex: 1;
+}
+
+.alert-badges {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+}
+
+.severity-badge {
+    color: white;
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 0.2rem 0.65rem;
+    border-radius: 20px;
+    letter-spacing: 0.04em;
+}
+
+.season-badge {
+    background: #f1f5f9;
+    color: #4a5568;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.2rem 0.65rem;
+    border-radius: 20px;
+}
+
+.alert-title {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #1a202c;
+    margin: 0 0 0.5rem;
+}
+
+.alert-desc {
+    font-size: 0.88rem;
+    color: #4a5568;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* ── Guide Toggle ── */
+.guide-toggle {
+    width: 100%;
+    background: color-mix(in srgb, var(--ac, #0d7377) 10%, white);
+    border: 1.5px solid color-mix(in srgb, var(--ac, #0d7377) 25%, transparent);
+    color: var(--ac, #0d7377);
+    border-radius: 10px;
+    padding: 0.7rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.18s;
+}
+
+.guide-toggle:hover {
+    background: color-mix(in srgb, var(--ac, #0d7377) 18%, white);
+}
+
+/* ── Care Guide ── */
+.care-guide {
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1.5px solid #f1f5f9;
+}
+
+.guide-heading {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin: 0 0 0.85rem;
+}
+
+.tip-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.85rem;
+}
+
+.tip-tab {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    border: 2px solid #e2e8f0;
+    background: #f7fafc;
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.tip-tab:hover {
+    border-color: var(--ac, #0d7377);
+}
+
+.tip-tab.active {
+    background: color-mix(in srgb, var(--ac, #0d7377) 12%, white);
+    border-color: var(--ac, #0d7377);
+}
+
+.tip-body {
+    background: #f9fafb;
+    border-radius: 12px;
+    padding: 1rem 1.1rem;
+    margin-bottom: 1rem;
+}
+
+.tip-title {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin: 0 0 0.4rem;
+}
+
+.tip-text {
+    font-size: 0.84rem;
+    color: #4a5568;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* ── Do / Don't ── */
+.do-dont {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.do-list,
+.dont-list {
+    background: #f9fafb;
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+}
+
+.dd-heading {
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin: 0 0 0.4rem;
+}
+
+.dd-item {
+    font-size: 0.78rem;
+    color: #4a5568;
+    margin: 0 0 0.25rem;
+    line-height: 1.4;
+}
+
+/* ── Subscribe Banner ── */
+.subscribe-banner {
+    background: white;
+    border-radius: 16px;
+    border: 2px solid #e2e8f0;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.05);
+    transition: border-color 0.3s;
+    flex-wrap: wrap;
+}
+
+.sub-banner-left {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    flex: 1;
+}
+
+.sub-banner-icon {
+    font-size: 1.8rem;
+}
+
+.sub-banner-left strong {
+    font-size: 0.95rem;
+    color: #1a202c;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.sub-banner-left p {
+    font-size: 0.8rem;
+    color: #718096;
+    margin: 0;
+}
+
+.btn-subscribe-alerts {
+    color: white;
+    border: none;
+    padding: 0.65rem 1.35rem;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.88rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: filter 0.15s, transform 0.15s;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+
+.btn-subscribe-alerts:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+
+.subscribed-badge {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #2e7d32;
+    background: rgba(46, 125, 50, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    white-space: nowrap;
+}
+
+/* ── Stats Strip ── */
+.alert-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+
+.alert-stat-card {
+    background: white;
+    border-radius: 14px;
+    padding: 1rem 0.75rem;
+    text-align: center;
+    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.alert-stat-card span {
+    font-size: 1.5rem;
+}
+
+.alert-stat-card strong {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #1a202c;
+}
+
+.alert-stat-card small {
+    font-size: 0.72rem;
+    color: #718096;
+    line-height: 1.3;
+}
+
+/* ── Responsive ── */
+@media (max-width: 720px) {
+    .alert-card-top {
+        flex-direction: column;
+    }
+
+    .do-dont {
+        grid-template-columns: 1fr;
+    }
+
+    .alert-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .subscribe-banner {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .seasonal-alerts {
+        padding: 3rem 0 2.5rem;
+    }
+
+    .alert-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+
+    .alert-card {
+        padding: 1.25rem;
+    }
+
+    .alert-tabs {
+        gap: 0.5rem;
+    }
+
+    .alert-tab-btn {
+        padding: 0.5rem 0.85rem;
+        font-size: 0.8rem;
+    }
+}

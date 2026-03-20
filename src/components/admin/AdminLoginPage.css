@@ -1,0 +1,197 @@
+.admin-login-container {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0d7377 0%, #000 100%);
+    position: relative;
+    overflow: hidden;
+    font-family: 'Inter', sans-serif;
+}
+
+.admin-login-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+    opacity: 0.2;
+}
+
+.admin-login-card {
+    position: relative;
+    z-index: 2;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 3rem;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 450px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+.admin-login-header {
+    margin-bottom: 2.5rem;
+}
+
+.admin-icon-shield {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 0 10px #0d7377);
+}
+
+.admin-login-header h1 {
+    color: #fff;
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.5px;
+}
+
+.admin-login-header p {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.95rem;
+}
+
+.admin-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    text-align: left;
+}
+
+.admin-form-group label {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+.admin-form-group input[type="email"],
+.admin-form-group input[type="password"] {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1rem;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.admin-form-group input[type="email"]:focus,
+.admin-form-group input[type="password"]:focus {
+    outline: none;
+    border-color: #0d7377;
+    box-shadow: 0 0 15px rgba(13, 115, 119, 0.3);
+}
+
+.admin-submit-btn {
+    background: #0d7377;
+    color: white;
+    border: none;
+    padding: 1rem;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 0.5rem;
+}
+
+.admin-submit-btn:hover:not(:disabled) {
+    background: #095053;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.admin-submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.admin-otp-container {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+}
+
+.admin-otp-box {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    height: 50px;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 1.25rem;
+    color: #fff;
+    font-weight: bold;
+}
+
+.admin-otp-box:focus {
+    outline: none;
+    border-color: #0d7377;
+}
+
+.admin-error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+    padding: 1rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+}
+
+.admin-success {
+    background: rgba(13, 115, 119, 0.1);
+    border: 1px solid rgba(13, 115, 119, 0.2);
+    color: #0d7377;
+    padding: 1rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+.admin-back-btn {
+    background: transparent;
+    color: rgba(255, 255, 255, 0.5);
+    border: none;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.admin-back-btn:hover {
+    color: #fff;
+}
+
+.admin-login-footer {
+    margin-top: 3rem;
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+}
+
+.admin-switch-link {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.admin-switch-link button {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.85rem;
+    cursor: pointer;
+    text-decoration: underline;
+    transition: all 0.2s;
+}
+
+.admin-switch-link button:hover {
+    color: #0d7377;
+    text-shadow: 0 0 10px rgba(13, 115, 119, 0.5);
+}

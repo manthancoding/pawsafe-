@@ -1,0 +1,29 @@
+diff --git a/src/components/Header.css b/src/components/Header.css
+index dffdb4b..b481262 100644
+--- a/src/components/Header.css
++++ b/src/components/Header.css
+@@ -544,7 +544,7 @@
+ /* ─────────────────────────────────────────
+    Responsive breakpoints
+ ───────────────────────────────────────── */
+-@media (max-width: 900px) {
++@media (max-width: 1024px) {
+   .nav {
+     display: none !important;
+   }
+diff --git a/src/components/Header.jsx b/src/components/Header.jsx
+index f3c71c9..8c7c2e1 100644
+--- a/src/components/Header.jsx
++++ b/src/components/Header.jsx
+@@ -110,7 +110,10 @@ export default function Header({ onEmergency, language, onLanguageChange, onVolu
+             <div key={group.id} className="nav-dropdown-wrapper">
+               <button
+                 className={`nav-link nav-link--dropdown ${activeDropdown === group.id ? 'active' : ''}`}
+-                onClick={() => toggleDropdown(group.id)}
++                onClick={(e) => {
++                  e.preventDefault(); // Prevent default to avoid double fire
++                  toggleDropdown(group.id);
++                }}
+                 onMouseEnter={() => setActiveDropdown(group.id)}
+               >
+                 {group.label}

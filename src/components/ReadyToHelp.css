@@ -1,0 +1,554 @@
+/* ─────────────────────────────────────────
+   Ready to Help Section
+───────────────────────────────────────── */
+.rth-section {
+    padding: 5rem 0 4rem;
+    background: linear-gradient(160deg, #f0fafa 0%, #fff 60%, #f5f0ff 100%);
+}
+
+/* ── Stats ── */
+.rth-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+}
+
+.rth-stat {
+    background: white;
+    border-radius: 14px;
+    padding: 1.2rem 0.75rem;
+    text-align: center;
+    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    transition: transform 0.2s;
+}
+
+.rth-stat:hover {
+    transform: translateY(-3px);
+}
+
+.rth-stat-icon {
+    font-size: 1.6rem;
+}
+
+.rth-stat strong {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #0d7377;
+}
+
+.rth-stat small {
+    font-size: 0.75rem;
+    color: #718096;
+}
+
+/* ── Role Cards ── */
+.roles-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.role-card {
+    background: white;
+    border-radius: 20px;
+    padding: 1.75rem 1.5rem;
+    border: 2px solid #e2e8f0;
+    transition: all 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+}
+
+.role-card:hover {
+    border-color: var(--rc, #0d7377);
+    transform: translateY(-6px);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.1);
+}
+
+.role-icon-wrap {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--rc, #0d7377) 12%, transparent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.25rem;
+}
+
+.role-icon {
+    font-size: 1.8rem;
+}
+
+.role-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #1a202c;
+    margin: 0;
+}
+
+.role-desc {
+    font-size: 0.84rem;
+    color: #4a5568;
+    line-height: 1.55;
+    margin: 0;
+    flex: 1;
+}
+
+.role-perks {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.role-perks li {
+    font-size: 0.78rem;
+    color: #2d3748;
+    padding: 0.3rem 0.5rem;
+    background: #f9fafb;
+    border-radius: 6px;
+}
+
+.role-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.btn-role-cta {
+    flex: 1;
+    color: white;
+    border: none;
+    padding: 0.65rem;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: filter 0.15s, transform 0.15s;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.18);
+}
+
+.btn-role-cta:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+
+.btn-role-form {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #718096;
+    background: none;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 0.15s;
+}
+
+.btn-role-form:hover {
+    color: var(--rc, #0d7377);
+}
+
+/* ── CTA Banner ── */
+.cta-banner {
+    background: white;
+    border-radius: 16px;
+    border: 2px solid rgba(13, 115, 119, 0.2);
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.05);
+    flex-wrap: wrap;
+}
+
+.cta-banner-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    flex: 1;
+}
+
+.cta-banner-icon {
+    font-size: 2rem;
+}
+
+.cta-banner-content strong {
+    font-size: 0.95rem;
+    color: #1a202c;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.cta-banner-content p {
+    font-size: 0.82rem;
+    color: #718096;
+    margin: 0;
+}
+
+.btn-open-form {
+    background: linear-gradient(135deg, #0d7377, #14a085);
+    color: white;
+    border: none;
+    padding: 0.7rem 1.35rem;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: 0 4px 14px rgba(13, 115, 119, 0.3);
+    transition: transform 0.15s, filter 0.15s;
+}
+
+.btn-open-form:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+/* ── Form Panel ── */
+.form-panel {
+    background: white;
+    border-radius: 20px;
+    border: 2px solid rgba(13, 115, 119, 0.15);
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+}
+
+.signup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+}
+
+.form-heading {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #1a202c;
+    margin: 0 0 2px;
+}
+
+.form-subtext {
+    font-size: 0.84rem;
+    color: #718096;
+    margin: 0;
+}
+
+.form-role-selector {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.form-role-btn {
+    padding: 0.45rem 0.9rem;
+    border-radius: 50px;
+    border: 2px solid #e2e8f0;
+    background: white;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: #4a5568;
+    transition: all 0.15s;
+}
+
+.form-role-btn:hover {
+    border-color: var(--rc, #0d7377);
+    color: var(--rc, #0d7377);
+}
+
+.form-role-btn.active {
+    background: var(--rc, #0d7377);
+    border-color: var(--rc, #0d7377);
+    color: white;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.form-field label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #4a5568;
+}
+
+.form-field input {
+    padding: 0.65rem 0.9rem;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    color: #1a202c;
+    outline: none;
+    transition: border-color 0.18s;
+}
+
+.form-field input:focus {
+    border-color: #0d7377;
+}
+
+.optional {
+    font-weight: 400;
+    color: #a0aec0;
+}
+
+/* Availability */
+.avail-options {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.avail-btn {
+    padding: 0.4rem 0.85rem;
+    border-radius: 50px;
+    border: 1.5px solid #e2e8f0;
+    background: #f7fafc;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: #4a5568;
+    transition: all 0.15s;
+}
+
+.avail-btn:hover {
+    border-color: #0d7377;
+    color: #0d7377;
+}
+
+.avail-btn.active {
+    background: rgba(13, 115, 119, 0.1);
+    border-color: #0d7377;
+    color: #0d7377;
+}
+
+/* Skills */
+.skill-chips {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.skill-chip {
+    padding: 0.4rem 0.8rem;
+    border-radius: 50px;
+    border: 1.5px solid #e2e8f0;
+    background: white;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: #4a5568;
+    transition: all 0.15s;
+}
+
+.skill-chip:hover {
+    border-color: #0d7377;
+}
+
+.skill-chip.active {
+    background: rgba(13, 115, 119, 0.1);
+    border-color: #0d7377;
+    color: #0d7377;
+}
+
+.btn-submit-form {
+    background: linear-gradient(135deg, #0d7377, #14a085);
+    color: white;
+    border: none;
+    padding: 0.9rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(13, 115, 119, 0.35);
+    transition: transform 0.15s, filter 0.15s;
+}
+
+.btn-submit-form:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+/* ── Form Success ── */
+.form-success {
+    text-align: center;
+    padding: 2rem;
+}
+
+.success-icon {
+    font-size: 3.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.form-success h3 {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #1a202c;
+    margin: 0 0 0.6rem;
+}
+
+.form-success p {
+    font-size: 0.88rem;
+    color: #4a5568;
+    line-height: 1.6;
+    margin: 0 0 0.5rem;
+}
+
+.success-note {
+    font-size: 0.82rem !important;
+    color: #718096 !important;
+}
+
+.btn-success-close {
+    margin-top: 1rem;
+    background: linear-gradient(135deg, #0d7377, #14a085);
+    color: white;
+    border: none;
+    padding: 0.65rem 2rem;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* ── Testimonials ── */
+.testimonials {
+    margin-top: 2rem;
+}
+
+.testimonials-heading {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #4a5568;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.testimonial-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.25rem;
+    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    border: 1.5px solid #f1f5f9;
+    transition: transform 0.2s;
+}
+
+.testimonial-card:hover {
+    transform: translateY(-3px);
+}
+
+.t-avatar {
+    font-size: 2rem;
+}
+
+.t-quote {
+    font-size: 0.84rem;
+    color: #4a5568;
+    line-height: 1.6;
+    margin: 0;
+    font-style: italic;
+    flex: 1;
+}
+
+.t-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.t-meta strong {
+    font-size: 0.85rem;
+    color: #1a202c;
+}
+
+.t-role {
+    font-size: 0.72rem;
+    color: #0d7377;
+    font-weight: 700;
+}
+
+/* ── Upgrade Modal ── */
+.upgrade-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 20px;
+}
+
+.upgrade-modal-content {
+    background: white;
+    border-radius: 24px;
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    animation: modalSlideUp 0.3s ease-out;
+}
+
+@keyframes modalSlideUp {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+    .rth-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .roles-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .testimonials-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}

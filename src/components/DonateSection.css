@@ -1,0 +1,429 @@
+/* ─────────────────────────────────────────
+   Donate Section
+───────────────────────────────────────── */
+.donate-section {
+    padding: 5rem 0 4rem;
+    background: linear-gradient(160deg, #fdfcff 0%, #f0fafa 100%);
+}
+
+/* ── Tabs ── */
+.donate-tabs {
+    display: flex;
+    gap: 0.5rem;
+    background: white;
+    padding: 0.4rem;
+    border-radius: 14px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+    max-width: 380px;
+    margin: 0 auto 2.5rem;
+}
+
+.donate-tab {
+    flex: 1;
+    padding: 0.65rem 1rem;
+    border-radius: 10px;
+    border: none;
+    font-size: 0.92rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: #718096;
+    background: transparent;
+    transition: all 0.2s ease;
+}
+
+.donate-tab.active {
+    background: linear-gradient(135deg, #0d7377, #14a085);
+    color: white;
+    box-shadow: 0 4px 14px rgba(13, 115, 119, 0.3);
+}
+
+/* ── Panel ── */
+.donate-panel {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.08);
+    max-width: 680px;
+    margin: 0 auto 2.5rem;
+}
+
+.panel-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #4a5568;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0 0 0.75rem;
+}
+
+/* ── Cause Grid ── */
+.cause-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.75rem;
+}
+
+.cause-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.9rem 0.5rem;
+    border-radius: 12px;
+    border: 2px solid #e2e8f0;
+    background: white;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    color: #4a5568;
+}
+
+.cause-card:hover {
+    border-color: var(--cause-color, #0d7377);
+    background: rgba(13, 115, 119, 0.04);
+}
+
+.cause-card.selected {
+    border-color: var(--cause-color, #0d7377);
+    background: color-mix(in srgb, var(--cause-color, #0d7377) 10%, transparent);
+    color: var(--cause-color, #0d7377);
+}
+
+.cause-icon {
+    font-size: 1.7rem;
+}
+
+.cause-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* ── Amount Grid ── */
+.amount-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.6rem;
+    margin-bottom: 0.85rem;
+}
+
+.amount-chip {
+    padding: 0.55rem;
+    border-radius: 8px;
+    border: 1.5px solid #e2e8f0;
+    background: #f7fafc;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: #2d3748;
+    transition: all 0.15s ease;
+}
+
+.amount-chip:hover {
+    border-color: #0d7377;
+    color: #0d7377;
+}
+
+.amount-chip.active {
+    background: rgba(13, 115, 119, 0.1);
+    border-color: #0d7377;
+    color: #0d7377;
+}
+
+.donate-input {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 1rem;
+    color: #1a202c;
+    box-sizing: border-box;
+    outline: none;
+    margin-bottom: 1rem;
+    transition: border-color 0.18s;
+}
+
+.donate-input:focus {
+    border-color: #0d7377;
+}
+
+/* ── Summary ── */
+.donate-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f7fafc;
+    border-radius: 10px;
+    padding: 0.7rem 1rem;
+    margin-bottom: 1.1rem;
+}
+
+.summary-cause {
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.25rem 0.7rem;
+    border-radius: 20px;
+}
+
+.summary-amount {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #0d7377;
+}
+
+/* ── Plans Grid ── */
+.plans-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.plan-card {
+    border: 2px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 1.25rem 1rem;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.plan-card:hover {
+    border-color: var(--plan-color, #0d7377);
+    transform: translateY(-3px);
+}
+
+.plan-card.selected {
+    border-color: var(--plan-color, #0d7377);
+    background: color-mix(in srgb, var(--plan-color, #0d7377) 6%, white);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.popular-badge {
+    position: absolute;
+    top: -11px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--plan-color, #7b1fa2);
+    color: white;
+    font-size: 0.68rem;
+    font-weight: 800;
+    padding: 0.2rem 0.7rem;
+    border-radius: 20px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.plan-name {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 0.4rem;
+}
+
+.plan-price {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--plan-color, #0d7377);
+    margin-bottom: 0.85rem;
+    line-height: 1;
+}
+
+.per-month {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: #718096;
+}
+
+.plan-perks {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.plan-perks li {
+    font-size: 0.78rem;
+    color: #4a5568;
+}
+
+.plan-radio {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid #e2e8f0;
+    margin: 0 auto;
+    transition: all 0.15s;
+}
+
+.plan-radio.checked {
+    border-color: var(--plan-color, #0d7377);
+    background: var(--plan-color, #0d7377);
+    box-shadow: inset 0 0 0 3px white;
+}
+
+/* ── Sub note ── */
+.sub-note {
+    background: #f0fafa;
+    border: 1px solid rgba(13, 115, 119, 0.15);
+    border-radius: 8px;
+    padding: 0.65rem 0.9rem;
+    font-size: 0.8rem;
+    color: #4a5568;
+    margin-bottom: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+}
+
+/* ── Main Donate Button ── */
+.btn-donate-main {
+    width: 100%;
+    background: linear-gradient(135deg, #0d7377, #14a085);
+    color: white;
+    border: none;
+    padding: 0.9rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(13, 115, 119, 0.35);
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.btn-donate-main:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 22px rgba(13, 115, 119, 0.45);
+}
+
+.btn-donate-main:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* ── Impact Strip ── */
+.impact-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    max-width: 680px;
+    margin: 0 auto;
+}
+
+.impact-item {
+    background: white;
+    border-radius: 14px;
+    padding: 1.1rem 0.75rem;
+    text-align: center;
+    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.impact-icon {
+    font-size: 1.6rem;
+}
+
+.impact-item strong {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #0d7377;
+}
+
+.impact-item small {
+    font-size: 0.75rem;
+    color: #718096;
+    line-height: 1.35;
+}
+
+/* ── Thank You Modal ── */
+.ty-modal {
+    background: white;
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+    animation: slide-up 0.25s ease;
+}
+
+.ty-icon {
+    font-size: 3.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.ty-modal h3 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #1a202c;
+    margin: 0 0 0.6rem;
+}
+
+.ty-modal p {
+    font-size: 0.92rem;
+    color: #4a5568;
+    line-height: 1.5;
+    margin: 0 0 0.5rem;
+}
+
+.ty-note {
+    font-size: 0.8rem !important;
+    color: #718096 !important;
+}
+
+.btn-ty-close {
+    margin-top: 1rem;
+    background: linear-gradient(135deg, #0d7377, #14a085);
+    color: white;
+    border: none;
+    padding: 0.7rem 2rem;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(13, 115, 119, 0.3);
+    transition: filter 0.15s;
+}
+
+.btn-ty-close:hover {
+    filter: brightness(1.1);
+}
+
+/* ── Responsive ── */
+@media (max-width: 700px) {
+    .cause-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .plans-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .amount-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .impact-strip {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 420px) {
+    .cause-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .impact-strip {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
