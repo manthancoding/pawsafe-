@@ -18,6 +18,9 @@ try {
 }
 
 const db = admin.firestore?.() || null;
+if (db) {
+    db.settings({ ignoreUndefinedProperties: true });
+}
 const auth = admin.auth?.() || null;
 
 module.exports = { admin, db, auth };

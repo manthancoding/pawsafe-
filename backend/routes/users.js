@@ -140,10 +140,12 @@ router.put('/me/profile', protect, async (req, res) => {
 // @route  GET /api/users/me/volunteer
 router.get('/me/volunteer', protect, async (req, res) => {
     try {
-        if (!req.user.email) return res.json({ success: true, data: [] });
-        const snapshot = await db.collection('volunteers').where('email', '==', req.user.email).get();
+        const userEmail = req.user.email || req.user.data?.email;
+        if (!userEmail) return res.json({ success: true, count: 0, data: [] });
+
+        const snapshot = await db.collection('volunteers').where('email', '==', userEmail).get();
         const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        res.json({ success: true, data: data });
+        res.json({ success: true, count: data.length, data: data });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
@@ -152,8 +154,10 @@ router.get('/me/volunteer', protect, async (req, res) => {
 // @route  GET /api/users/me/donations
 router.get('/me/donations', protect, async (req, res) => {
     try {
-        if (!req.user.email) return res.json({ success: true, data: [] });
-        const snapshot = await db.collection('donations').where('donorEmail', '==', req.user.email).get();
+        const userEmail = req.user.email || req.user.data?.email;
+        if (!userEmail) return res.json({ success: true, count: 0, data: [] });
+
+        const snapshot = await db.collection('donations').where('donorEmail', '==', userEmail).get();
         const donations = snapshot.docs.map(doc => {
             const d = doc.data();
             return {

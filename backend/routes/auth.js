@@ -298,8 +298,8 @@ router.post('/verify-otp', async (req, res) => {
             if (roles.includes('volunteer')) {
                 const volunteerData = {
                     userId: userRecord.uid,
-                    name,
-                    email,
+                    name: name || userRecord.displayName || email || 'Volunteer',
+                    email: email || userRecord.email,
                     phone: req.body.phone || '',
                     latitude: req.body.latitude || 0,
                     longitude: req.body.longitude || 0,
@@ -309,7 +309,13 @@ router.post('/verify-otp', async (req, res) => {
                     totalRescues: 0,
                     createdAt: FieldValue.serverTimestamp()
                 };
-                await db.collection('volunteers').doc(userRecord.uid).set(volunteerData);
+
+                // Cleanup undefined values just in case
+                Object.keys(volunteerData).forEach(key => {
+                    if (volunteerData[key] === undefined) delete volunteerData[key];
+                });
+
+                await db.collection('volunteers').doc(userRecord.uid).set(volunteerData, { merge: true });
             }
         }
 
