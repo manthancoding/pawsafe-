@@ -7,6 +7,18 @@ import { doc, onSnapshot } from 'firebase/firestore';
 import { emergencyApi } from '../../utils/api';
 import './UserDashboard.css';
 
+// ── Helpers ──
+const formatTimestamp = (ts, options = {}) => {
+    if (!ts) return 'Pending';
+    let date;
+    if (ts.seconds) date = new Date(ts.seconds * 1000);
+    else if (ts._seconds) date = new Date(ts._seconds * 1000);
+    else date = new Date(ts);
+
+    if (isNaN(date.getTime())) return 'Pending';
+    return date.toLocaleDateString('en-IN', options);
+};
+
 export default function UserDashboard({ user, onLogout, onUpdateUser }) {
     const navigate = useNavigate();
     const [stats, setStats] = useState({
@@ -651,7 +663,7 @@ function ReportsSection({ reports, onTrack }) {
                             <div className="card-badge" data-status={report.status}>{report.status}</div>
                             <h4>{report.animalType} - {report.issueType}</h4>
                             <p className="card-location">📍 {report.location || 'Unknown Location'}</p>
-                            <p className="card-meta">{new Date(report.createdAt?.seconds * 1000).toLocaleDateString()}</p>
+                            <p className="card-meta">{formatTimestamp(report.createdAt)}</p>
                         </div>
                         <div className="card-actions">
                             <button className="btn-text" onClick={() => onTrack(report)}>Track Progress</button>
@@ -744,7 +756,7 @@ function DonationsSection({ donations }) {
                     <tbody>
                         {donations.map(donation => (
                             <tr key={donation.id}>
-                                <td>{donation.createdAt ? new Date(donation.createdAt).toLocaleString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Pending'}</td>
+                                <td>{formatTimestamp(donation.createdAt, { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
                                 <td className="amount">₹{donation.amount}</td>
                                 <td>{donation.cause || donation.purpose || 'General Support'}</td>
                                 <td><span className="status-dot success"></span> Completed</td>
@@ -793,7 +805,7 @@ function VolunteerSection({ volunteer }) {
                     </div>
                     <div className="v-stat">
                         <span className="v-label">Member Since</span>
-                        <span className="v-value">{new Date(volunteer.createdAt?.seconds * 1000).toLocaleDateString()}</span>
+                        <span className="v-value">{formatTimestamp(volunteer.createdAt)}</span>
                     </div>
                 </div>
                 <div className="v-badge-section">
