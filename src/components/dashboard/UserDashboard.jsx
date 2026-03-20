@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, NavLink, useNavigate, Navigate } from 'react-router-dom';
 import RecoveryTracker from '../RecoveryTracker';
+import RescueProgressMap from '../RescueProgressMap';
+import { db } from '../../firebase';
+import { doc, onSnapshot } from 'firebase/firestore';
 import { emergencyApi } from '../../utils/api';
 import './UserDashboard.css';
 
@@ -22,6 +25,7 @@ export default function UserDashboard({ user, onLogout, onUpdateUser }) {
         cases: [],
         acceptedCases: []
     });
+    const [trackingReport, setTrackingReport] = useState(null);
 
     useEffect(() => {
         if (!user) return;
@@ -205,7 +209,7 @@ export default function UserDashboard({ user, onLogout, onUpdateUser }) {
                     <Routes>
                         <Route index element={<ProfileSection user={user} stats={stats} volunteer={data.volunteer} onUpdateUser={onUpdateUser} />} />
                         <Route path="adoptions" element={<AdoptionsSection adoptions={data.adoptions} />} />
-                        <Route path="reports" element={<ReportsSection reports={data.reports} />} />
+                        <Route path="reports" element={<ReportsSection reports={data.reports} onTrack={setTrackingReport} />} />
                         <Route path="favorites" element={<FavoritesSection favorites={data.favorites} />} />
                         <Route path="donations" element={<DonationsSection donations={data.donations} />} />
                         <Route path="volunteer" element={<VolunteerSection volunteer={data.volunteer} />} />
@@ -223,6 +227,13 @@ export default function UserDashboard({ user, onLogout, onUpdateUser }) {
                     </Routes>
                 )}
             </main>
+
+            {trackingReport && (
+                <RescueTrackingModal
+                    report={trackingReport}
+                    onClose={() => setTrackingReport(null)}
+                />
+            )}
         </div>
     );
 }
@@ -606,7 +617,7 @@ function AdoptionsSection({ adoptions }) {
     );
 }
 
-function ReportsSection({ reports }) {
+function ReportsSection({ reports, onTrack }) {
     const navigate = useNavigate();
     if (reports.length === 0) {
         return (
@@ -643,7 +654,7 @@ function ReportsSection({ reports }) {
                             <p className="card-meta">{new Date(report.createdAt?.seconds * 1000).toLocaleDateString()}</p>
                         </div>
                         <div className="card-actions">
-                            <button className="btn-text">Track Progress</button>
+                            <button className="btn-text" onClick={() => onTrack(report)}>Track Progress</button>
                         </div>
                     </div>
                 ))}
@@ -824,6 +835,90 @@ function SettingsSection() {
                     <div className="setting-info">
                         <h4>Email Verification</h4>
                         <p>Verified: <strong>Yes</strong></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function RescueTrackingModal({ report, onClose }) {
+    const [volunteerLoc, setVolunteerLoc] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        if (!report.acceptedBy) {
+            setLoading(false);
+            return;
+        }
+
+        // Listen to volunteer's live location
+        const unsub = onSnapshot(doc(db, 'volunteers', report.acceptedBy), (docSnap) => {
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                if (data.latitude && data.longitude) {
+                    setVolunteerLoc({ lat: data.latitude, lng: data.longitude });
+                }
+            }
+            setLoading(false);
+        }, (err) => {
+            console.error('Error tracking volunteer:', err);
+            setLoading(false);
+        });
+
+        return () => unsub();
+    }, [report.acceptedBy]);
+
+    const rescueLoc = { lat: report.latitude, lng: report.longitude };
+
+    return (
+        <div className="vd-overlay" style={{ zIndex: 9000 }}>
+            <div className="vd-shell" style={{ maxWidth: '600px', height: 'auto', maxHeight: '90vh', flexDirection: 'column' }}>
+                <div className="panel-header" style={{ padding: '1.5rem', borderBottom: '1px solid #eee' }}>
+                    <h2 style={{ fontSize: '1.2rem' }}>Rescue Tracking</h2>
+                    <button className="vd-close-btn" style={{ marginTop: 0 }} onClick={onClose}>✕ Close</button>
+                </div>
+
+                <div style={{ padding: '1.5rem', flex: 1, overflowY: 'auto' }}>
+                    <div className="detail-header" style={{ marginBottom: '1rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                        <span className="detail-animal" style={{ fontSize: '2rem' }}>{report.animalType === 'dog' ? '🐶' : report.animalType === 'cat' ? '🐱' : '🐾'}</span>
+                        <div>
+                            <h3 style={{ fontSize: '1rem', margin: 0 }}>{report.animalType} - {report.issueType}</h3>
+                            <p className="detail-meta" style={{ fontSize: '0.8rem', margin: '2px 0 0' }}>Status: <span style={{ color: '#0d7377', fontWeight: '700' }}>{report.status.toUpperCase()}</span></p>
+                        </div>
+                    </div>
+
+                    {loading ? (
+                        <div style={{ height: '350px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f7fafc', borderRadius: '12px' }}>
+                            <div className="spinner"></div>
+                        </div>
+                    ) : (
+                        <RescueProgressMap
+                            volunteerLoc={volunteerLoc}
+                            rescueLoc={rescueLoc}
+                            height="350px"
+                        />
+                    )}
+
+                    <div style={{ marginTop: '1.5rem', background: '#f7fafc', padding: '1.25rem', borderRadius: '12px', border: '1px solid #edf2f7' }}>
+                        <p style={{ fontSize: '0.9rem', margin: 0, color: '#2d3748' }}>
+                            <strong>Location:</strong> {report.location}
+                        </p>
+                        {report.status === 'accepted' ? (
+                            <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <span style={{ fontSize: '1.2rem' }}>✨</span>
+                                <p style={{ fontSize: '0.88rem', color: '#2c7a7b', margin: 0, fontWeight: '600' }}>
+                                    A volunteer is on the way to help!
+                                </p>
+                            </div>
+                        ) : (
+                            <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <span style={{ fontSize: '1.2rem' }}>⏳</span>
+                                <p style={{ fontSize: '0.88rem', color: '#718096', margin: 0 }}>
+                                    Waiting for a nearby volunteer to accept this rescue request.
+                                </p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

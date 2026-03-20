@@ -3,6 +3,7 @@ import { db } from '../firebase';
 import { collection, query, where, onSnapshot, doc } from 'firebase/firestore';
 import { emergencyApi, volunteerApi, chatApi } from '../utils/api';
 import RecoveryTracker from './RecoveryTracker';
+import RescueProgressMap from './RescueProgressMap';
 import './VolunteerDashboard.css';
 
 const COMPLETED = [
@@ -355,10 +356,12 @@ export default function VolunteerDashboard({ onLogout }) {
                                                     </span>
                                                 </div>
                                             </div>
-                                            <div className="map-placeholder-mini">
-                                                <span>🗺️</span>
-                                                <p>Volunteer: {volunteerLoc.lat.toFixed(4)}, {volunteerLoc.lng.toFixed(4)}</p>
-                                                <p>Rescue: {selectedCase.coords.lat.toFixed(4)}, {selectedCase.coords.lng.toFixed(4)}</p>
+                                            <div className="map-container-mini">
+                                                <RescueProgressMap
+                                                    volunteerLoc={volunteerLoc}
+                                                    rescueLoc={selectedCase.coords}
+                                                    height="200px"
+                                                />
                                             </div>
                                         </div>
                                         <div className="session-controls">
